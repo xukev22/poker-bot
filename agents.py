@@ -18,6 +18,30 @@ class RandomAgent:
         pass
 
 
+class HumanAgent:
+    """UI to allow humans to interact with bots"""
+
+    def step(self, state):
+        raw_obs_dict = state["raw_obs"]
+        legal_acts = raw_obs_dict["legal_actions"]
+
+        while True:
+            print(raw_obs_dict)
+            print("Legal actions are:", ", ".join(legal_acts))
+            user_input = input("Please enter one of the legal actions: ").strip()
+            if user_input in legal_acts:
+                action = user_input
+                break
+            else:
+                print(f"❌  '{user_input}' is not valid. Try again.\n")
+
+        # now `action` is guaranteed to be one of legal_acts
+        return action
+
+    def update(self, trajectories):
+        pass
+
+
 class FirstVisitMCAgent:
     """
     A First‑Visit Monte Carlo control agent for imperfect‑information games (e.g. Leduc Poker).

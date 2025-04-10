@@ -1,11 +1,7 @@
 import rlcard
 
-# from rlcard.agents import RandomAgent
-# from rlcard.agents.human_agents.leduc_holdem_human_agent import HumanAgent
-
-from agents import FirstVisitMCAgent, RandomAgent
+from agents import FirstVisitMCAgent, RandomAgent, HumanAgent
 from utils import process_leduc_state_v1
-from rlcard.agents.human_agents.leduc_holdem_human_agent import HumanAgent
 
 
 def play_episodes(
@@ -135,3 +131,32 @@ avg_return0, avg_return1 = evaluate_agents(env_eval, agent0, agent1, num_episode
 print(
     f"Trained agent0 vs Random -> avg payoff: {avg_return0}, random payoff: {avg_return1}"
 )
+
+
+def human_play_bot(env, human_agent, bot_agent):
+    env.reset()
+    print("*" * 40)
+    print("new game!")
+    while not env.is_over():
+        pid = env.get_player_id()
+        state_for_pid = env.get_state(pid)
+
+        if pid == 0:
+            action = human_agent.step(state_for_pid)
+            print("*" * 20)
+            print("you took action:", action)
+        else:
+            action = bot_agent.step(state_for_pid)
+            print("bot took action:", action)
+
+        # step the env
+        env.step(action, True)
+
+    # get final payoffs
+    payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
+    print(payoffs)
+
+
+env_human = rlcard.make("leduc-holdem")
+human_agent = HumanAgent()
+human_play_bot(env_human, human_agent, agent0)
