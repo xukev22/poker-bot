@@ -3,6 +3,21 @@ from utils import process_leduc_state_v1
 from collections import defaultdict
 
 
+class RandomAgent:
+    """
+    Picks random actions in the env.
+    """
+
+    def step(self, state):
+        raw_obs_dict = state["raw_obs"]
+        legal_acts = raw_obs_dict["legal_actions"]
+
+        return random.choice(legal_acts)
+
+    def update(self, trajectories):
+        pass
+
+
 class FirstVisitMCAgent:
     """
     A First‑Visit Monte Carlo control agent for imperfect‑information games (e.g. Leduc Poker).

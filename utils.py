@@ -19,3 +19,8 @@ def process_leduc_state_v1(raw_imperfect_state, pid):
     my_chips = raw_obs["all_chips"][pid]
     opp_chips = raw_obs["all_chips"][1 - pid]
     return (hand, public_card, my_chips, opp_chips)
+
+
+# def copy_first_visit_mc(firstVisitMCAgent):
+#     new_mc_agent = FirstVisitMCAgent(firstVisitMCAgent.epsilon, firstVisitMCAgent.)
+#     return new_mc_agent
