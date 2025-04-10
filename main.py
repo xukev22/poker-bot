@@ -1,11 +1,18 @@
 import rlcard
+import random
 
 from agents import FirstVisitMCAgent, RandomAgent, HumanAgent
 from utils import process_leduc_state_v1
 
 
 def play_episodes(
-    env, agent0, agent1, num_episodes=1000, do_update=True, update_freq=1
+    env,
+    agent0,
+    agent1,
+    num_episodes=1000,
+    do_update=True,
+    update_freq=1,
+    state_transformer=process_leduc_state_v1,
 ):
     """
     Run 'num_episodes' episodes of the environment with agent0 (player 0) and agent1 (player 1).
@@ -52,7 +59,7 @@ def play_episodes(
             if do_update:
                 # minimal representation – or direct raw state – whichever you prefer
                 # assume we have a function process_leduc_state_v1, TODO might parametrize, maybe store raw state?
-                info_s = process_leduc_state_v1(state_for_pid, pid)
+                info_s = state_transformer(state_for_pid, pid)
 
                 if pid == 0:
                     episode_traj_0.append((info_s, action, 0.0))
@@ -106,15 +113,23 @@ def evaluate_agents(env, agent0, agent1, num_episodes=1000):
     return (avg_p0, avg_p1)
 
 
+NUM_EPISODES = 100000
+UPDATE_FREQ = 100
+
 env = rlcard.make("leduc-holdem")
-agent0 = FirstVisitMCAgent(epsilon=0.01, gamma=0.8)
-agent1 = FirstVisitMCAgent(epsilon=0.01, gamma=0.8)
+agent0 = FirstVisitMCAgent(epsilon=0.01, gamma=1)
+agent1 = FirstVisitMCAgent(epsilon=0.01, gamma=1)
 
 print(
-    "Training the two MC agents vs each other for 10,000 episodes, updating every 20 episodes..."
+    f"Training the two MC agents vs each other for {NUM_EPISODES} episodes, updating every {UPDATE_FREQ} episodes..."
 )
 train_payoffs = play_episodes(
-    env, agent0, agent1, num_episodes=1000000, do_update=True, update_freq=200
+    env,
+    agent0,
+    agent1,
+    num_episodes=NUM_EPISODES,
+    do_update=True,
+    update_freq=UPDATE_FREQ,
 )
 
 env_eval = rlcard.make("leduc-holdem")
@@ -143,11 +158,12 @@ def human_play_bot(env, human_agent, bot_agent):
         print(
             "dont look here if you dont want to cheat!", env.get_perfect_information()
         )
+        first = random.choice([0, 1])
         while not env.is_over():
             pid = env.get_player_id()
             state_for_pid = env.get_state(pid)
 
-            if pid == 0:
+            if pid == first:
                 action = human_agent.step(state_for_pid)
                 print("*" * 20)
                 print("you took action:", action)
@@ -163,6 +179,7 @@ def human_play_bot(env, human_agent, bot_agent):
         print(payoffs)
 
 
-# env_human = rlcard.make("leduc-holdem")
-# human_agent = HumanAgent()
-# human_play_bot(env_human, human_agent, agent0)
+# if you put the trained bot on wrong permutation it may get confused
+env_human = rlcard.make("leduc-holdem")
+human_agent = HumanAgent()
+human_play_bot(env_human, human_agent, agent0)

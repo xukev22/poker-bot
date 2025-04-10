@@ -53,7 +53,9 @@ class FirstVisitMCAgent:
         N (defaultdict): Counts of first visits, N[state][action] -> int.
     """
 
-    def __init__(self, epsilon=0.1, gamma=0.9):
+    def __init__(
+        self, epsilon=0.1, gamma=0.9, state_transformer=process_leduc_state_v1
+    ):
         """
         Initialize the agent.
 
@@ -63,6 +65,7 @@ class FirstVisitMCAgent:
         """
         self.epsilon = epsilon
         self.gamma = gamma
+        self.state_transformer = state_transformer
 
         self.Q = defaultdict(lambda: defaultdict(float))
         self.N = defaultdict(lambda: defaultdict(int))
@@ -93,7 +96,7 @@ class FirstVisitMCAgent:
             return random.choice(legal_acts)
 
         # exploit break ties randomly
-        info_s = process_leduc_state_v1(state, cur_pid)
+        info_s = self.state_transformer(state, cur_pid)
         q_s = self.Q[info_s]  # defaultdict(float), so unseen (s,a) is 0.0
 
         # find max Q among legal actions
