@@ -107,14 +107,14 @@ def evaluate_agents(env, agent0, agent1, num_episodes=1000):
 
 
 env = rlcard.make("leduc-holdem")
-agent0 = FirstVisitMCAgent(epsilon=0.05, gamma=1.0)
-agent1 = FirstVisitMCAgent(epsilon=0.05, gamma=1.0)
+agent0 = FirstVisitMCAgent(epsilon=0.01, gamma=0.8)
+agent1 = FirstVisitMCAgent(epsilon=0.01, gamma=0.8)
 
 print(
     "Training the two MC agents vs each other for 10,000 episodes, updating every 20 episodes..."
 )
 train_payoffs = play_episodes(
-    env, agent0, agent1, num_episodes=100000, do_update=True, update_freq=20
+    env, agent0, agent1, num_episodes=1000000, do_update=True, update_freq=200
 )
 
 env_eval = rlcard.make("leduc-holdem")
