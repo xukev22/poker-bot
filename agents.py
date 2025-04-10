@@ -67,7 +67,7 @@ class FirstVisitMCAgent:
         self.Q = defaultdict(lambda: defaultdict(float))
         self.N = defaultdict(lambda: defaultdict(int))
 
-    def step(self, state):
+    def step(self, state, greedy=False):
         """
         Choose an action in the given state using e‑greedy over legal actions.
 
@@ -88,7 +88,7 @@ class FirstVisitMCAgent:
         cur_pid = raw_obs_dict["current_player"]
 
         # uses e-greedy
-        if random.random() < self.epsilon:
+        if (not greedy) and (random.random() < self.epsilon):
             # explore
             return random.choice(legal_acts)
 

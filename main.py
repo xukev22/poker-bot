@@ -107,56 +107,62 @@ def evaluate_agents(env, agent0, agent1, num_episodes=1000):
 
 
 env = rlcard.make("leduc-holdem")
-agent0 = FirstVisitMCAgent(epsilon=0.1, gamma=0.9)
-agent1 = FirstVisitMCAgent(epsilon=0.1, gamma=0.9)
+agent0 = FirstVisitMCAgent(epsilon=0.05, gamma=1.0)
+agent1 = FirstVisitMCAgent(epsilon=0.05, gamma=1.0)
 
 print(
     "Training the two MC agents vs each other for 10,000 episodes, updating every 20 episodes..."
 )
 train_payoffs = play_episodes(
-    env, agent0, agent1, num_episodes=10000, do_update=True, update_freq=20
+    env, agent0, agent1, num_episodes=100000, do_update=True, update_freq=20
 )
 
 env_eval = rlcard.make("leduc-holdem")
 agent_random = RandomAgent()
 
-avg_return0, avg_return1 = evaluate_agents(
+avg_return, rand_return = evaluate_agents(
     env_eval, agent0, agent_random, num_episodes=10000
 )
 print(
-    f"Trained agent0 vs Random -> avg payoff: {avg_return0}, random payoff: {avg_return1}"
+    f"Trained agent0 vs Random -> avg payoff: {avg_return}, random payoff: {rand_return}"
 )
 
 avg_return0, avg_return1 = evaluate_agents(env_eval, agent0, agent1, num_episodes=10000)
 print(
-    f"Trained agent0 vs Random -> avg payoff: {avg_return0}, random payoff: {avg_return1}"
+    f"Trained agent0 vs agent1 -> avg0 payoff: {avg_return0}, random payoff: {avg_return1}"
 )
+
+# print(agent0.Q)
 
 
 def human_play_bot(env, human_agent, bot_agent):
-    env.reset()
-    print("*" * 40)
-    print("new game!")
-    while not env.is_over():
-        pid = env.get_player_id()
-        state_for_pid = env.get_state(pid)
+    while True:
+        env.reset()
+        print("*" * 40)
+        print("new game!")
+        print(
+            "dont look here if you dont want to cheat!", env.get_perfect_information()
+        )
+        while not env.is_over():
+            pid = env.get_player_id()
+            state_for_pid = env.get_state(pid)
 
-        if pid == 0:
-            action = human_agent.step(state_for_pid)
-            print("*" * 20)
-            print("you took action:", action)
-        else:
-            action = bot_agent.step(state_for_pid)
-            print("bot took action:", action)
+            if pid == 0:
+                action = human_agent.step(state_for_pid)
+                print("*" * 20)
+                print("you took action:", action)
+            else:
+                action = bot_agent.step(state_for_pid, True)
+                print("bot took action:", action)
 
-        # step the env
-        env.step(action, True)
+            # step the env
+            env.step(action, True)
 
-    # get final payoffs
-    payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
-    print(payoffs)
+        # get final payoffs
+        payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
+        print(payoffs)
 
 
-env_human = rlcard.make("leduc-holdem")
-human_agent = HumanAgent()
-human_play_bot(env_human, human_agent, agent0)
+# env_human = rlcard.make("leduc-holdem")
+# human_agent = HumanAgent()
+# human_play_bot(env_human, human_agent, agent0)
