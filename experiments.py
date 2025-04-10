@@ -111,7 +111,7 @@ def evaluate_agents(env, agent0, agent1, num_episodes=1000):
     return (avg_p0, avg_p1)
 
 
-def human_play_bot(env, human_agent, bot_agent):
+def human_play_bot(env, human_agent, bot_agent, randomize):
     while True:
         env.reset()
         print("*" * 40)
@@ -129,7 +129,7 @@ def human_play_bot(env, human_agent, bot_agent):
                 print("*" * 20)
                 print("you took action:", action)
             else:
-                action = bot_agent.step(state_for_pid, True)
+                action = bot_agent.step(state_for_pid, not randomize)
                 print("bot took action:", action)
 
             # step the env

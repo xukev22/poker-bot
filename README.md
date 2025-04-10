@@ -21,3 +21,6 @@ Num episodes and update_freq
 Combinations of agents playing each other
 
 Combinations of state we care about
+
+
+in eval we have predictable agent, may want to use greedy=False

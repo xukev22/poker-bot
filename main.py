@@ -49,4 +49,4 @@ print(
 # if you put the trained bot on wrong permutation it may get confused
 env_human = rlcard.make("leduc-holdem")
 human_agent = HumanAgent()
-human_play_bot(env_human, human_agent, agent0)
+human_play_bot(env_human, human_agent, agent0, False)
