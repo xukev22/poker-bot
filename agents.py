@@ -90,7 +90,7 @@ class FirstVisitMCAgent:
         legal_acts = raw_obs_dict["legal_actions"]
         cur_pid = raw_obs_dict["current_player"]
 
-        # uses e-greedy
+        # Epsilon-greedy exploration
         if (not greedy) and (random.random() < self.epsilon):
             # explore
             return random.choice(legal_acts)
@@ -147,3 +147,97 @@ class FirstVisitMCAgent:
                     self.N[s][a] += 1
                     alpha = 1.0 / self.N[s][a]
                     self.Q[s][a] += alpha * (G - self.Q[s][a])
+
+
+class EveryVisitMCAgent:
+    """
+    An Every‑Visit Monte Carlo control agent for imperfect‑information games (e.g. Leduc Poker).
+
+    In contrast to First‑Visit MC, this agent updates its Q‑value estimates for every occurrence of
+    a (state, action) pair in an episode.
+
+    Attributes:
+        epsilon (float): Exploration probability for epsilon‑greedy action selection.
+        gamma (float): Discount factor for computing returns.
+        Q (defaultdict): Action‑value estimates, Q[state][action] -> float.
+        N (defaultdict): Counts of visits, N[state][action] -> int.
+    """
+
+    def __init__(
+        self, epsilon=0.1, gamma=0.9, state_transformer=process_leduc_state_v1
+    ):
+        """
+        Initialize the every-visit MC agent.
+
+        Args:
+            epsilon (float): Probability of choosing a random action (exploration).
+            gamma (float): Discount factor for computing returns.
+            state_transformer (callable): Function to transform raw states into a usable format.
+        """
+        self.epsilon = epsilon
+        self.gamma = gamma
+        self.state_transformer = state_transformer
+        self.Q = defaultdict(lambda: defaultdict(float))
+        self.N = defaultdict(lambda: defaultdict(int))
+
+    def step(self, state, greedy=False):
+        """
+        Choose an action in the given state using an epsilon‑greedy policy.
+
+        Args:
+            state (dict): The current game state.
+                Must contain:
+                  - state["raw_obs"]["legal_actions"]: list of legal action labels.
+                  - state["raw_obs"]["current_player"]: integer player index.
+            greedy (bool): If True, select the best (greedy) action; otherwise, use epsilon‑greedy exploration.
+
+        Returns:
+            action: Chosen legal action.
+        """
+        raw_obs = state["raw_obs"]
+        legal_acts = raw_obs["legal_actions"]
+        cur_pid = raw_obs["current_player"]
+
+        # Epsilon-greedy exploration
+        if (not greedy) and (random.random() < self.epsilon):
+            return random.choice(legal_acts)
+
+        # exploitation: select the action with the highest Q-value (ties broken randomly)
+        info_s = self.state_transformer(state, cur_pid)
+        q_s = self.Q[info_s]
+
+        # find max Q among legal actions
+        best_value = None
+        best_actions = []
+        for a in legal_acts:
+            v = q_s[a]
+            if best_value is None or v > best_value:
+                best_value = v
+                best_actions = [a]
+            elif v == best_value:
+                best_actions.append(a)
+
+        return random.choice(best_actions)
+
+    def update(self, trajectories):
+        """
+        Update Q-values using the Every‑Visit MC rule.
+
+        For each episode in trajectories:
+          - Compute the return G at each timestep by traversing the episode in reverse.
+          - Update Q[s][a] for every occurrence of (state, action).
+
+        Args:
+            trajectories (List[List[Tuple[state, action, reward]]]):
+                A list of episodes, where each episode is a list of (state, action, reward) tuples.
+        """
+        for episode in trajectories:
+            G = 0.0
+            # Process the episode backwards (from terminal state)
+            for t in reversed(range(len(episode))):
+                s, a, r = episode[t]
+                G = self.gamma * G + r
+                # For Every‑Visit MC, update every occurrence of (s, a)
+                self.N[s][a] += 1
+                alpha = 1.0 / self.N[s][a]
+                self.Q[s][a] += alpha * (G - self.Q[s][a])
