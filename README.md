@@ -9,7 +9,7 @@ main.py is our entry point, where everything ties together. We explore all sorts
 The obvious parameters: epsilon and gamma
 
 - epsilon:
-  I think lower epsilon
+  I think lower epsilon makes agent
 - gamma:
   I think lower gamma incentivizes bluffing
 
@@ -24,3 +24,5 @@ Combinations of state we care about
 
 
 in eval we have predictable agent, may want to use greedy=False
+epsilon annealing
+model chaining
