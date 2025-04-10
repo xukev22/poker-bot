@@ -1,9 +1,14 @@
 import rlcard
 from agents import FirstVisitMCAgent, RandomAgent, HumanAgent, EveryVisitMCAgent
 from experiments import play_episodes, human_play_bot, evaluate_agents
-from utils import process_leduc_state_v1, process_leduc_state_v2, process_leduc_state_v3
+from utils import (
+    process_leduc_state_v1,
+    process_leduc_state_v2,
+    process_leduc_state_v3,
+    process_leduc_state_v4,
+)
 
-NUM_EPISODES = 1000000
+NUM_EPISODES = 100000
 UPDATE_FREQ = 100
 
 agente0 = EveryVisitMCAgent(epsilon=0.1, gamma=0.1)
@@ -11,15 +16,15 @@ agente1 = EveryVisitMCAgent(epsilon=0.01, gamma=1)
 
 env = rlcard.make("leduc-holdem")
 agent0 = FirstVisitMCAgent(
-    epsilon=0.01, gamma=0.5, state_transformer=process_leduc_state_v3
+    epsilon=0.01, gamma=0.5, state_transformer=process_leduc_state_v4
 )
 agent1 = FirstVisitMCAgent(
-    epsilon=0.01, gamma=0.5, state_transformer=process_leduc_state_v3
+    epsilon=0.01, gamma=0.5, state_transformer=process_leduc_state_v4
 )
 
 
 print(
-    f"Training the two MC agents vs each other for {NUM_EPISODES} episodes, updating every {UPDATE_FREQ} episodes... v3 state"
+    f"Training the two MC agents vs each other for {NUM_EPISODES} episodes, updating every {UPDATE_FREQ} episodes... v4 state"
 )
 train_payoffs = play_episodes(
     env,
@@ -28,7 +33,7 @@ train_payoffs = play_episodes(
     num_episodes=NUM_EPISODES,
     do_update=True,
     update_freq=UPDATE_FREQ,
-    state_transformer=process_leduc_state_v3,
+    state_transformer=process_leduc_state_v4,
 )
 
 env_eval = rlcard.make("leduc-holdem")
@@ -42,13 +47,15 @@ print(
 )
 
 avg_return, rand_return = evaluate_agents(
-    env_eval, agent1, agent_random, num_episodes=100000
+    env_eval, agent_random, agent1, num_episodes=100000
 )
 print(
     f"Trained agent1 vs Random -> avg payoff: {avg_return}, random payoff: {rand_return}"
 )
 
-avg_return0, avg_return1 = evaluate_agents(env_eval, agent0, agent1, num_episodes=100000)
+avg_return0, avg_return1 = evaluate_agents(
+    env_eval, agent0, agent1, num_episodes=100000
+)
 print(
     f"Trained agent0 vs agent1 -> avg0 payoff: {avg_return0}, random payoff: {avg_return1}"
 )

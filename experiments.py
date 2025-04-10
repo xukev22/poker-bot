@@ -1,6 +1,7 @@
 import random
 
 from utils import process_leduc_state_v1
+import matplotlib.pyplot as plt
 
 
 def play_episodes(
@@ -99,15 +100,35 @@ def play_episodes(
     return payoffs_history
 
 
-def evaluate_agents(env, agent0, agent1, num_episodes=1000):
+def evaluate_agents(env, agent0, agent1, num_episodes=1000, plot=False):
     """
-    Simple evaluation of agent0 vs agent1 over `num_episodes`.
-    Returns the average payoff of (player0, player1).
+    Plays `num_episodes` episodes of agent0 vs. agent1 and returns
+    the average payoff of (player0, player1).
+
+    If plot=True, displays a simple line chart of each player's
+    rewards across episodes.
     """
+    # Gather payoffs from each episode
     payoffs = play_episodes(env, agent0, agent1, num_episodes, do_update=False)
-    # payoffs is a list of [p0, p1] pairs
-    avg_p0 = sum([p[0] for p in payoffs]) / num_episodes
-    avg_p1 = sum([p[1] for p in payoffs]) / num_episodes
+    # Separate payoffs for each agent
+    p0_rewards = [p[0] for p in payoffs]
+    p1_rewards = [p[1] for p in payoffs]
+
+    # Compute averages
+    avg_p0 = sum(p0_rewards) / num_episodes
+    avg_p1 = sum(p1_rewards) / num_episodes
+
+    # Optionally plot
+    if plot:
+        plt.figure()
+        plt.plot(p0_rewards, label="Player 0 Reward")
+        plt.plot(p1_rewards, label="Player 1 Reward")
+        plt.xlabel("Episode")
+        plt.ylabel("Reward")
+        plt.legend()
+        plt.title("Rewards Over Time")
+        plt.show()
+
     return (avg_p0, avg_p1)
 
 
