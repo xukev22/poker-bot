@@ -40,8 +40,8 @@ for sp in state_processors:
                 f"w/ e={e}, gamma={g}, sp={sp.__name__} ==="
             )
 
-            agent_e = EveryVisitMCAgent(epsilon=e, gamma=g)
-            agent_f = FirstVisitMCAgent(epsilon=e, gamma=g)
+            agent_e = EveryVisitMCAgent(epsilon=e, gamma=g, state_transformer=sp)
+            agent_f = FirstVisitMCAgent(epsilon=e, gamma=g, state_transformer=sp)
 
             # Train them against each other
             play_episodes(
@@ -123,7 +123,7 @@ for sp in state_processors:
             plt.title(f"[Orientation 1 Duel] {sp.__name__}, e={e}, gamma={g}")
             plt.legend()
 
-            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}duel.png"
+            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}_duel.png"
             plt.savefig(duel_filename)
             plt.close()
             print(f"Saved duel plot to {duel_filename}")
@@ -140,8 +140,8 @@ for sp in state_processors:
             )
 
             # Create fresh agents
-            agent_e = EveryVisitMCAgent(epsilon=e, gamma=g)
-            agent_f = FirstVisitMCAgent(epsilon=e, gamma=g)
+            agent_e = EveryVisitMCAgent(epsilon=e, gamma=g, state_transformer=sp)
+            agent_f = FirstVisitMCAgent(epsilon=e, gamma=g, state_transformer=sp)
 
             # Train them with reversed orientation
             play_episodes(

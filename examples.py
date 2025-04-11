@@ -8,7 +8,7 @@ from utils import (
     process_leduc_state_v4,
 )
 
-NUM_EPISODES = 100000
+NUM_EPISODES = 1000000
 UPDATE_FREQ = 100
 
 agente0 = EveryVisitMCAgent(epsilon=0.1, gamma=0.1)
