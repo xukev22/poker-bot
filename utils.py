@@ -88,3 +88,16 @@ def process_leduc_state_v4(raw_imperfect_state, pid):
     # make immutable
     action_record = tuple(raw_imperfect_state["action_record"])
     return (hand, public_card, action_record)
+
+
+# TODO load/save compare against previous iter
+def load():
+    pass
+
+
+def save():
+    pass
+
+
+# TODO
+# explore how cum reward agaisnt random agent changes over different time steps

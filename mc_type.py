@@ -1,6 +1,5 @@
 # How does every visit mc compare against first visit mc?
 import os
-import statistics
 import numpy as np
 import rlcard
 from agents import FirstVisitMCAgent, RandomAgent, HumanAgent, EveryVisitMCAgent
