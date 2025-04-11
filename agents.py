@@ -1,6 +1,16 @@
 import random
 from utils import process_leduc_state_v1
 from collections import defaultdict
+import pickle
+
+# pickle dont accept lambda
+
+def default_float_dict():
+    return defaultdict(float)
+
+
+def default_int_dict():
+    return defaultdict(int)
 
 
 class RandomAgent:
@@ -67,8 +77,19 @@ class FirstVisitMCAgent:
         self.gamma = gamma
         self.state_transformer = state_transformer
 
-        self.Q = defaultdict(lambda: defaultdict(float))
-        self.N = defaultdict(lambda: defaultdict(int))
+        self.Q = defaultdict(default_float_dict)
+        self.N = defaultdict(default_int_dict)
+
+    def save(self, filepath):
+        """Save the current agent to the given file path."""
+        with open(filepath, "wb") as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def load(filepath):
+        """Load an agent from the given file path."""
+        with open(filepath, "rb") as f:
+            return pickle.load(f)
 
     def step(self, state, greedy=False):
         """
@@ -177,8 +198,19 @@ class EveryVisitMCAgent:
         self.epsilon = epsilon
         self.gamma = gamma
         self.state_transformer = state_transformer
-        self.Q = defaultdict(lambda: defaultdict(float))
-        self.N = defaultdict(lambda: defaultdict(int))
+        self.Q = defaultdict(default_float_dict)
+        self.N = defaultdict(default_int_dict)
+
+    def save(self, filepath):
+        """Save the current agent to the given file path."""
+        with open(filepath, "wb") as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def load(filepath):
+        """Load an agent from the given file path."""
+        with open(filepath, "rb") as f:
+            return pickle.load(f)
 
     def step(self, state, greedy=False):
         """
