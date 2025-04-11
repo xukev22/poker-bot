@@ -78,7 +78,7 @@ for sp in state_processors:
             plt.legend()
 
             # Save plot to file
-            filename = f"graphs/EvF_{sp.__name__}_e{e}_g{g}_orient1.png"
+            filename = f"graphs/EvF_{sp.__name__}_e{e}_g{g}.png"
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             plt.savefig(filename)
             plt.close()
@@ -123,7 +123,7 @@ for sp in state_processors:
             plt.title(f"[Orientation 1 Duel] {sp.__name__}, e={e}, gamma={g}")
             plt.legend()
 
-            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}_orient1_duel.png"
+            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}duel.png"
             plt.savefig(duel_filename)
             plt.close()
             print(f"Saved duel plot to {duel_filename}")
@@ -177,7 +177,7 @@ for sp in state_processors:
             plt.title(f"[Orientation 2] {sp.__name__}, e={e}, gamma={g}")
             plt.legend()
 
-            filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}_orient2.png"
+            filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}.png"
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             plt.savefig(filename)
             plt.close()
@@ -219,7 +219,7 @@ for sp in state_processors:
             plt.title(f"[Orientation 2 Duel] {sp.__name__}, e={e}, gamma={g}")
             plt.legend()
 
-            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}_orient2_duel.png"
+            duel_filename = f"graphs/FvE_{sp.__name__}_e{e}_g{g}_duel.png"
             plt.savefig(duel_filename)
             plt.close()
             print(f"Saved duel plot to {duel_filename}")
