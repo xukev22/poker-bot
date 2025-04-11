@@ -29,7 +29,6 @@ gammas = [1, 0.99, 0.9, 0.5]
 env = rlcard.make("leduc-holdem")
 random_agent = RandomAgent()
 
-# loop over all combinations of config
 # --------------------
 # 1) Original "orientation": agent_e (EveryVisit) is Player 0, agent_f (FirstVisit) is Player 1
 # --------------------
@@ -63,7 +62,6 @@ for sp in state_processors:
             e_cumulative = np.cumsum(e_rewards)
 
             # Evaluate agent_f (as Player 1) vs Random
-            # So we keep agent_f in second position to keep it as Player 1
             f_vs_rand_payoffs = play_episodes(
                 env, random_agent, agent_f, 10000, do_update=False
             )
@@ -100,9 +98,38 @@ for sp in state_processors:
             else:
                 print("  => They perform equally.")
 
+            # --- Evaluate head-to-head (duel) and plot cumulative sums ---
+            duel_payoffs = play_episodes(
+                env,
+                agent_e,  # Player 0
+                agent_f,  # Player 1
+                num_episodes=10000,
+                do_update=False,
+                state_transformer=sp,
+            )
+
+            # Extract payoffs
+            e_duel_rewards = [p[0] for p in duel_payoffs]
+            f_duel_rewards = [p[1] for p in duel_payoffs]
+            e_duel_cum = np.cumsum(e_duel_rewards)
+            f_duel_cum = np.cumsum(f_duel_rewards)
+
+            # Plot the cumulative sums
+            plt.figure()
+            plt.plot(e_duel_cum, label="EveryVisit (P0) - Duel")
+            plt.plot(f_duel_cum, label="FirstVisit (P1) - Duel")
+            plt.xlabel("Episode")
+            plt.ylabel("Cumulative Reward")
+            plt.title(f"[Orientation 1 Duel] {sp.__name__}, e={e}, gamma={g}")
+            plt.legend()
+
+            duel_filename = f"graphs/orient1_FvE_{sp.__name__}_e{e}_g{g}_duel.png"
+            plt.savefig(duel_filename)
+            plt.close()
+            print(f"Saved duel plot to {duel_filename}")
 
 # --------------------
-# 2) NEW "flipped orientation": agent_f (FirstVisit) is Player 0, agent_e (EveryVisit) is Player 1
+# 2) "Flipped orientation": agent_f (FirstVisit) is Player 0, agent_e (EveryVisit) is Player 1
 # --------------------
 for sp in state_processors:
     for e in epsilons:
@@ -117,7 +144,6 @@ for sp in state_processors:
             agent_f = FirstVisitMCAgent(epsilon=e, gamma=g)
 
             # Train them with reversed orientation
-            # agent_f is Player 0, agent_e is Player 1
             play_episodes(
                 env,
                 agent_f,  # Player 0
@@ -128,11 +154,10 @@ for sp in state_processors:
                 state_transformer=sp,
             )
 
-            # Now evaluate agent_f (Player 0) vs Random
+            # Evaluate agent_f (Player 0) vs Random
             f_vs_rand_payoffs = play_episodes(
                 env, agent_f, random_agent, 10000, do_update=False
             )
-            # As Player 0, payoff is at index [0]
             f_rewards = [p[0] for p in f_vs_rand_payoffs]
             f_cumulative = np.cumsum(f_rewards)
 
@@ -140,7 +165,6 @@ for sp in state_processors:
             e_vs_rand_payoffs = play_episodes(
                 env, random_agent, agent_e, 10000, do_update=False
             )
-            # As Player 1, payoff is at index [1]
             e_rewards = [p[1] for p in e_vs_rand_payoffs]
             e_cumulative = np.cumsum(e_rewards)
 
@@ -153,14 +177,13 @@ for sp in state_processors:
             plt.title(f"[Orientation 2] {sp.__name__}, e={e}, gamma={g}")
             plt.legend()
 
-            # Save plot to file
             filename = f"graphs/orient2_FvE_{sp.__name__}_e{e}_g{g}.png"
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             plt.savefig(filename)
             plt.close()
             print(f"Saved combined plot to {filename}")
 
-            # Evaluate agent_f vs agent_e directly, f is Player 0, e is Player 1
+            # Evaluate agent_f vs agent_e directly
             p0_avg, p1_avg = evaluate_agents(
                 env, agent_f, agent_e, num_episodes=1000, plot=False
             )
@@ -173,3 +196,30 @@ for sp in state_processors:
                 print("  => EveryVisitMCAgent performs better.")
             else:
                 print("  => They perform equally.")
+
+            # --- Evaluate head-to-head (duel) and plot cumulative sums ---
+            duel_payoffs = play_episodes(
+                env,
+                agent_f,  # Player 0
+                agent_e,  # Player 1
+                num_episodes=10000,
+                do_update=False,
+                state_transformer=sp,
+            )
+            f_duel_rewards = [p[0] for p in duel_payoffs]
+            e_duel_rewards = [p[1] for p in duel_payoffs]
+            f_duel_cum = np.cumsum(f_duel_rewards)
+            e_duel_cum = np.cumsum(e_duel_rewards)
+
+            plt.figure()
+            plt.plot(f_duel_cum, label="FirstVisit (P0) - Duel")
+            plt.plot(e_duel_cum, label="EveryVisit (P1) - Duel")
+            plt.xlabel("Episode")
+            plt.ylabel("Cumulative Reward")
+            plt.title(f"[Orientation 2 Duel] {sp.__name__}, e={e}, gamma={g}")
+            plt.legend()
+
+            duel_filename = f"graphs/orient2_FvE_{sp.__name__}_e{e}_g{g}_duel.png"
+            plt.savefig(duel_filename)
+            plt.close()
+            print(f"Saved duel plot to {duel_filename}")
