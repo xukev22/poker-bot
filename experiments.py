@@ -132,6 +132,14 @@ def evaluate_agents(env, agent0, agent1, num_episodes=1000, plot=False):
     return (avg_p0, avg_p1)
 
 
+def flip(pid):
+    if pid == 0:
+        return 1
+    if pid == 1:
+        return 0
+    raise RuntimeError("Flip pid should be 0 or 1")
+
+
 def human_play_bot(env, human_agent, bot_agent, human_first):
     while True:
         env.reset()
@@ -143,33 +151,23 @@ def human_play_bot(env, human_agent, bot_agent, human_first):
         )
         init_pid = env.get_player_id()
         print(init_pid, "init pid <-------------------")
+        human_pid = init_pid if human_first else flip(init_pid)
 
         while not env.is_over():
             pid = env.get_player_id()
             state_for_pid = env.get_state(pid)
-            print(pid, init_pid, "before if and initpid <-------------------")
 
-            if human_first:
-                if pid == init_pid:
-                    action = human_agent.step(state_for_pid)
-                    print("*" * 20)
-                    print("you took action:", action)
-                else:
-                    action = bot_agent.step(state_for_pid, True)
-                    print("bot took action:", action)
+            if pid == human_pid:
+                action = human_agent.step(state_for_pid)
+                print("*" * 20)
+                print("you took action:", action)
             else:
-                if pid != init_pid:
-                    action = human_agent.step(state_for_pid)
-                    print("*" * 20)
-                    print("you took action:", action)
-                else:
-                    action = bot_agent.step(state_for_pid, True)
-                    print("bot took action:", action)
+                action = bot_agent.step(state_for_pid, True)
+                print("bot took action:", action)
 
             # step the env
             env.step(action, True)
 
         # get final payoffs
-        multiplier = 1 if human_first else -1
-        payoffs = multiplier * env.get_payoffs()  # [payoff_p0, payoff_p1]
-        print(payoffs[init_pid])
+        payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
+        print(payoffs[human_pid])
