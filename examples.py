@@ -62,11 +62,11 @@ print(
 
 
 env = rlcard.make("leduc-holdem")
-agent0 = FirstVisitMCAgent(
-    epsilon=0.1, gamma=0.1, state_transformer=process_leduc_state_v1
+agent0 = EveryVisitMCAgent(
+    epsilon=0.1, gamma=0.5, state_transformer=process_leduc_state_v1
 )
 agent1 = FirstVisitMCAgent(
-    epsilon=0.01, gamma=1, state_transformer=process_leduc_state_v1
+    epsilon=0.1, gamma=0.5, state_transformer=process_leduc_state_v1
 )
 
 
