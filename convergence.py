@@ -7,7 +7,20 @@ from experiments import play_episodes
 from utils import process_leduc_state_v1
 
 # Set parameters
-training_points = [1, 5, 10, 50, 100, 1000, 5000, 10000, 100000, 1000000]
+training_points = [
+    10,
+    50,
+    100,
+    200,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    100000,
+    500000,
+    1000000,
+]
 num_eval_episodes = 10000  # Evaluation episodes against Random Agent
 epsilon = 0.01
 gamma = 0.9
