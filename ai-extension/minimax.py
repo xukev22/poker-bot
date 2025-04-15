@@ -3,6 +3,7 @@ from enum import Enum
 import copy
 import matplotlib.pyplot as plt
 from collections import Counter
+import random
 
 # env = rlcard.make("leduc-holdem")
 # env.reset()
@@ -124,6 +125,7 @@ class NodeType(Enum):
 # The expectimax function takes an explicit nodeType and uses sb_id to switch between decision branches.
 def expectimax(env, depth, nodeType, sb_id):
     state = env.get_perfect_information()
+    print(depth, nodeType, state)
 
     # Base case: terminal game state or maximum search depth reached.
     if env.is_over() or depth == 0:
@@ -188,42 +190,41 @@ def get_best_action(env, depth, sb_id):
 
 
 env = rlcard.make("leduc-holdem")
+env.reset()
+
+
+# ====================
+# Experiment 1: Evaluate initial state (before any moves).
+# ====================
 
 num_runs = 100
-search_depth = 10
+search_depth = 5
 
-best_actions = []
-best_values = []
+init_best_actions = []
+init_best_values = []
 
+print("=== Initial States ===")
 for i in range(num_runs):
     env.reset()
     state = env.get_perfect_information()
     init_pid = env.get_player_id()
     best_action, best_value = get_best_action(env, search_depth, init_pid)
-    best_actions.append(best_action)
-    best_values.append(best_value)
+    init_best_actions.append(best_action)
+    init_best_values.append(best_value)
     print(f"Run {i+1}: Best action: {best_action}, expectimax value: {best_value}")
 
-# ====================
-# Plotting the graphs.
-# ====================
-
-# 1. Bar Chart for action frequencies.
-action_counts = Counter(best_actions)
-actions_list = list(action_counts.keys())
-counts = list(action_counts.values())
-
+# Plot graphs for initial states.
 plt.figure()
-plt.bar(actions_list, counts)
+action_counts = Counter(init_best_actions)
+plt.bar(action_counts.keys(), action_counts.values())
 plt.xlabel("Best Action")
 plt.ylabel("Frequency")
-plt.title("Distribution of Best Actions over 100 Runs")
+plt.title("Initial State: Distribution of Best Actions (100 Runs)")
 plt.show()
 
-# 2. Histogram for expectimax values.
 plt.figure()
-plt.hist(best_values, bins=20)
+plt.hist(init_best_values, bins=20)
 plt.xlabel("Expectimax Value")
 plt.ylabel("Frequency")
-plt.title("Histogram of Expectimax Values over 100 Runs")
+plt.title("Initial State: Histogram of Expectimax Values (100 Runs)")
 plt.show()
