@@ -7,14 +7,57 @@ kInvalidCard = -10000
 def card_rank(card):
     """
     Converts a card index into a rank value.
-    Cards 0,1  → Jack (11)
-    Cards 2,3  → Queen (12)
-    Cards 4,5  → King (13)
-    If the card is invalid (not dealt), returns 0.
+    If the card is invalid (not dealt), throw exception.
     """
     if card == kInvalidCard:
-        return 0
-    return 11 + (card // 2)
+        raise RuntimeError("Card does not exist")
+    return card // 2
+
+
+def heuristic_evaluation_relative(state, agent):
+    """
+    A relative heuristic evaluation function for Leduc Poker.
+
+    This function compares the agent's hand against the opponent's hand.
+    Assumes there are two players (agents 0 and 1) and that the opponent's private card
+    is accessible (e.g. in simulation or after showdown).
+
+    Preflop:
+      The evaluation uses the private card ranks (difference between agent’s and opponent’s).
+
+    Postflop:
+      A bonus is awarded for a pair (private card matching the public card),
+      and the final score is the difference between the agent's total and the opponent's.
+    """
+    # Get the agent's private card and compute its rank.
+    my_card = state.private_card(agent)
+    my_rank = card_rank(my_card)
+
+    # Identify the opponent assuming a two-player game.
+    opponent = 1 - agent
+    opp_card = state.private_card(opponent)
+
+    # Evaluate bonus if the public card forms a pair.
+    public = state.public_card()
+    my_bonus = 10 if (public != kInvalidCard and card_rank(public) == my_rank) else 0
+    my_score = my_rank + my_bonus
+
+    # Check if the opponent's card is known.
+    if opp_card != kInvalidCard:
+        opp_rank = card_rank(opp_card)
+        opp_bonus = (
+            10 if (public != kInvalidCard and card_rank(public) == opp_rank) else 0
+        )
+        opp_score = opp_rank + opp_bonus
+    else:
+        # Fallback: If the opponent’s card is hidden, one common choice is to assume an average value.
+        # For a deck like in Leduc (typically two copies each of three ranks) the average rank might be:
+        # (sum of all possible card ranks minus the agent’s card) / (number of remaining cards).
+        # This is a simplified placeholder; in a full implementation you might enumerate the remaining cards.
+        average_rank = 2  # Example: if ranks are 1, 2, 3 then the average is (1+3)/2 = 2 when excluding your card.
+        opp_score = average_rank
+
+    return my_score - opp_score
 
 
 def heuristic_evaluation(state, agent):
@@ -54,11 +97,13 @@ def expectiminimax(state, depth, agent):
     # print(depth, agent)
     # terminal state or depth limit reached
     if state.is_terminal() or depth == 0:
+        if depth == 0:
+            print("depth 0 reached")
         if state.is_terminal():
             # two-player zero-sum game, can use one players return
             return state.returns()[agent]
         else:
-            return heuristic_evaluation(state, agent)
+            return heuristic_evaluation_relative(state, agent)
 
     # chance node: calculate the expected value over all outcomes
     if state.is_chance_node():
@@ -102,12 +147,14 @@ if __name__ == "__main__":
     print(state.is_chance_node())
     print(state.legal_actions())
 
+    # J1
     state.apply_action(0)
-    state.apply_action(2)
+    # K1
+    state.apply_action(4)
 
     # agent 0 to start
     agent = 0
-    depth_limit = 10
+    depth_limit = 6
 
     result = expectiminimax(state, depth_limit, agent)
     print(
