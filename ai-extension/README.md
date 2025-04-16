@@ -1,0 +1,1 @@
+first issue: expectiminimax does not capture reality of poker (imperfect info, variance)
