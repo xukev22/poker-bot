@@ -137,6 +137,25 @@ def expectiminimax(state, depth, agent):
         return worst_value
 
 
+def get_best_action(state, depth, agent):
+    best_value = float("-inf")
+    best_action = None
+
+    # consider each legal action
+    for action in state.legal_actions():
+        # dont mutate original
+        next_state = state.clone()
+        next_state.apply_action(action)
+        # recurse
+        value = expectiminimax(next_state, depth - 1, agent)
+
+        if value > best_value:
+            best_value = value
+            best_action = action
+
+    return best_value, best_action
+
+
 if __name__ == "__main__":
     game = pyspiel.load_game("leduc_poker")
     state = game.new_initial_state()
@@ -148,17 +167,20 @@ if __name__ == "__main__":
     print(state.legal_actions())
 
     # J1
-    state.apply_action(0)
-    # K1
     state.apply_action(4)
+    # K1
+    state.apply_action(5)
 
     # agent 0 to start
     agent = 0
     depth_limit = 6
 
-    result = expectiminimax(state, depth_limit, agent)
+    result, act = get_best_action(state, depth_limit, agent)
+
+    action = state.action_to_string(agent, act)
+
     print(
-        "Expectiminimax evaluation for agent {} from the initial state: {}".format(
-            agent, result
+        "Expectiminimax evaluation for agent {} from the initial state: {}\nBest action: {}".format(
+            agent, result, action
         )
     )
