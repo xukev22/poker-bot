@@ -31,38 +31,38 @@ env = rlcard.make("leduc-holdem")
 # state = env.get_perfect_information()
 # print("after check", state)
 
-env.reset()
-state = env.get_perfect_information()
-init_pid = env.get_player_id()
+# env.reset()
+# state = env.get_perfect_information()
+# init_pid = env.get_player_id()
 
-print(state)
-print(init_pid)
+# print(state)
+# print(init_pid)
 
-env.step("raise", True)
+# env.step("raise", True)
 
-state = env.get_perfect_information()
-init_pid = env.get_player_id()
+# state = env.get_perfect_information()
+# init_pid = env.get_player_id()
 
-print("after raise", state)
+# print("after raise", state)
 
-env.step("raise", True)
+# env.step("raise", True)
 
-state = env.get_perfect_information()
-init_pid = env.get_player_id()
+# state = env.get_perfect_information()
+# init_pid = env.get_player_id()
 
-print("after raise", state)
+# print("after raise", state)
 
 
-env.step("call", True)
+# env.step("call", True)
 
-state = env.get_perfect_information()
-init_pid = env.get_player_id()
+# state = env.get_perfect_information()
+# init_pid = env.get_player_id()
 
-print("after call", state)
-print(env.is_over())
-print(env.get_payoffs())
+# print("after call", state)
+# print(env.is_over())
+# print(env.get_payoffs())
 
-SAMPLE_SIZE = 10
+SAMPLE_SIZE = 3
 
 
 # in leduc, next state is stochastic (going to flop) if we check or if we call and that wasnt a "limp"
@@ -120,7 +120,7 @@ def evaluate(state, pid):
         has_pair = any(card[1] == pub_rank for card in hand_cards)
         if has_pair:
             # A pair is generally much stronger in Leduc Hold'em.
-            hand_strength = 20  # You can tune this bonus as needed.
+            hand_strength = 10  # You can tune this bonus as needed.
         else:
             # Without a pair, use the value of the highest hole card.
             hand_strength = max(ranks.get(card[1], 0) for card in hand_cards)
@@ -144,6 +144,7 @@ def evaluate(state, pid):
 # pid is cur player, bb_id is id of bb player
 def expectimax(env, depth, pid, bb_id):
     state = env.get_perfect_information()
+    print(evaluate(state, pid), depth)
 
     if env.is_over() or depth == 0:
         return evaluate(state, pid)  # heurstic if no exact payoff
@@ -160,14 +161,16 @@ def expectimax(env, depth, pid, bb_id):
                 expVal = 0
                 for _ in range(SAMPLE_SIZE):
                     env_copy_stochastic = copy.deepcopy(env_copy)
+                    print(depth, env_copy_stochastic.get_perfect_information())
                     env_copy_stochastic.step(action, True)
+                    print(depth, env_copy_stochastic.get_perfect_information())
                     # we want to start the next turn from action on BB (whoever acts second preflop)
-                    expVal += expectimax(env_copy_stochastic, depth - 1, bb_id)
+                    expVal += expectimax(env_copy_stochastic, depth - 1, bb_id, bb_id)
                 bestValue = max(bestValue, expVal / SAMPLE_SIZE)
             else:
                 # normal case, we go to min
                 env_copy.step(action, True)
-                val = expectimax(env_copy, depth - 1, flip(pid))
+                val = expectimax(env_copy, depth - 1, flip(pid), bb_id)
                 if val > bestValue:
                     bestValue = val
         return bestValue
@@ -183,11 +186,23 @@ def expectimax(env, depth, pid, bb_id):
                     env_copy_stochastic = copy.deepcopy(env_copy)
                     env_copy_stochastic.step(action, True)
                     # we want to start the next turn from action on BB (whoever acts second preflop)
-                    expVal += expectimax(env_copy_stochastic, depth - 1, bb_id)
+                    expVal += expectimax(env_copy_stochastic, depth - 1, bb_id, bb_id)
                 worstValue = min(worstValue, expVal / SAMPLE_SIZE)
             else:
                 env_copy.step(action, True)
-                val = expectimax(env_copy, depth - 1, flip(pid))
+                val = expectimax(env_copy, depth - 1, flip(pid), bb_id)
                 if val < worstValue:
                     worstValue = val
         return worstValue
+
+
+env = rlcard.make("leduc-holdem")
+env.reset()
+
+state = env.get_perfect_information()
+sb_id = env.get_player_id()
+
+print(state)
+print(sb_id)
+
+print(expectimax(env, 8, sb_id, bb_id=flip(sb_id)))
