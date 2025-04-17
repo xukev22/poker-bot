@@ -84,27 +84,51 @@ def h_perfect_info_limit(state, agent):
     return tie + this_agent
 
 
+def state_pot_size(state, agent):
+    """Extract the current pot size (sum of all players' contributions)."""
+    game = state.get_game()
+    params = game.get_parameters()
+    num_players = game.num_players()
+    num_suits = params["numSuits"]
+    num_ranks = params["numRanks"]
+    deck_size = num_suits * num_ranks
+
+    # grab the observation vector for `agent`
+    obs = state.observation_tensor(agent)
+    offset = num_players + 2 * deck_size
+    contribs = obs[offset : offset + num_players]
+    return sum(contribs)
+
+
+def state_contrib(state, agent):
+    """How many chips agent has already put into the pot."""
+    game = state.get_game()
+    params = game.get_parameters()
+    num_players = game.num_players()
+    deck_size = params["numSuits"] * params["numRanks"]
+
+    obs = state.observation_tensor(agent)
+    offset = num_players + 2 * deck_size
+    # slice out [spent_by_p0, spent_by_p1, …]
+    contribs = obs[offset : offset + num_players]
+    return contribs[agent]
+
+
 def h_perfect_info_weighted_total_limit(state, agent):
-    # compute old “perfect‐info” number
+    # 1) equity part
     tie, this_eq, _ = calc_hero_equity(state, agent)
-
-    # grab the per‐player contributions
-    acpc = state.acpc_state()
-    pot = sum(acpc.spent)  # total pot so far
-
-    # Option A: just scale equity by pot size
+    # 2) pot so far
+    pot = state_pot_size(state, agent)
+    # scale equity by pot
     return (tie + this_eq) * pot
 
 
 def h_perfect_info_weighted_ctrb_limit(state, agent):
-    # compute old “perfect‐info” number
+    # 1) equity (ignore ties here if you like)
     _, this_eq, _ = calc_hero_equity(state, agent)
-
-    # grab the per‐player contributions
-    acpc = state.acpc_state()
-    pot = sum(acpc.spent)  # total pot so far
-    contrib = acpc.spent[agent]  # how much *you* have put in so far
-
-    # Option B: convert to an *expected net* in chips:
-    #    EV = equity * pot − what you’ve already invested
+    # 2) pot so far
+    pot = state_pot_size(state, agent)
+    # 3) what *you* have already invested
+    contrib = state_contrib(state, agent)
+    # expected net‐EV = equity * pot − your sunk chips
     return this_eq * pot - contrib

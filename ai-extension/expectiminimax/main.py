@@ -2,6 +2,8 @@ from expectiminimax.heuristics import (
     h_perfect_info_leduc,
     h_imperfect_info_leduc,
     h_perfect_info_limit,
+    h_perfect_info_weighted_ctrb_limit,
+    h_perfect_info_weighted_total_limit,
 )
 from expectiminimax.algorithms import get_best_action
 import pyspiel
@@ -29,7 +31,7 @@ state.apply_action(14)
 
 depth = 4
 agent = 0
-heuristic_fn = h_perfect_info_limit
+heuristic_fn = h_perfect_info_weighted_ctrb_limit
 
 score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples=5)
 action_str = state.action_to_string(agent, action)
