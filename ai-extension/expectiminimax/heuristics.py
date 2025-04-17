@@ -16,7 +16,7 @@ def card_rank(card):
 
 def h_perfect_info(state, agent):
     """
-    A relative heuristic evaluation comparing the agent's score to the opponent's score.
+    A perfect info heuristic evaluation comparing the agent's score to the opponent's score.
 
     Preflop:
       Difference between private card ranks.
@@ -39,8 +39,38 @@ def h_perfect_info(state, agent):
             10 if (public != kInvalidCard and card_rank(public) == opp_rank) else 0
         )
         opp_score = opp_rank + opp_bonus
-        print("perfect info")
     else:
         raise ("We should know opponents card")
 
     return my_score - opp_score
+
+
+def h_imperfect_info(state, agent):
+    """
+    Simple imperfect‑info: assume opp has any card in 0–5
+    except your private and the public, uniform EV.
+    """
+    # 1) your score
+    my_card = state.private_card(agent)
+    public = state.public_card()
+    my_rank = card_rank(my_card)
+    my_bonus = 10 if (public != kInvalidCard and card_rank(public) == my_rank) else 0
+    my_score = my_rank + my_bonus
+
+    # 2) build unseen pool: cards 0..5 minus your private & the public (if dealt)
+    unseen = [c for c in range(6) if c != my_card and c != public]
+
+    # 3) compute all possible opponent scores
+    opp_scores = []
+    for opp_card in unseen:
+        opp_rank = card_rank(opp_card)
+        opp_bonus = (
+            10 if (public != kInvalidCard and card_rank(public) == opp_rank) else 0
+        )
+        opp_scores.append(opp_rank + opp_bonus)
+
+    # 4) expected opponent score
+    E_opp = sum(opp_scores) / len(opp_scores)
+
+    # 5) return expected difference
+    return my_score - E_opp
