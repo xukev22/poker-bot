@@ -27,21 +27,22 @@ state.apply_action(7)
 state.apply_action(13)
 state.apply_action(14)
 
-depth = 3
+depth = 4
 agent = 0
 heuristic_fn = h_perfect_info_limit
 
-score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples=10)
+score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples=5)
 action_str = state.action_to_string(agent, action)
 
+print(state)
 print(f"score: {score}, best action: {action} aka {action_str}")
 
-run_and_plot_leduc(8, h_perfect_info_leduc, heuristic_name="PerfectInfo")
-run_and_plot_leduc(6, h_perfect_info_leduc, heuristic_name="PerfectInfo")
-run_and_plot_leduc(4, h_perfect_info_leduc, heuristic_name="PerfectInfo")
-run_and_plot_leduc(2, h_perfect_info_leduc, heuristic_name="PerfectInfo")
+# run_and_plot_leduc(8, h_perfect_info_leduc, heuristic_name="PerfectInfo")
+# run_and_plot_leduc(6, h_perfect_info_leduc, heuristic_name="PerfectInfo")
+# run_and_plot_leduc(4, h_perfect_info_leduc, heuristic_name="PerfectInfo")
+# run_and_plot_leduc(2, h_perfect_info_leduc, heuristic_name="PerfectInfo")
 
-run_and_plot_leduc(8, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
-run_and_plot_leduc(6, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
-run_and_plot_leduc(4, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
-run_and_plot_leduc(2, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
+# run_and_plot_leduc(8, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
+# run_and_plot_leduc(6, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
+# run_and_plot_leduc(4, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
+# run_and_plot_leduc(2, h_imperfect_info_leduc, heuristic_name="ImperfectInfo")
