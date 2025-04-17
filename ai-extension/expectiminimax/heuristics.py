@@ -1,18 +1,3 @@
-# from pokerstove import Range, Evaluator
-
-# # define two specific hands (single‐hand ranges)
-# hand1 = Range("AsKd")  # Ace♠ King♦
-# hand2 = Range("QcJs")  # Queen♣ Jack♠
-
-# board = []  # e.g. preflop
-# evaluator = Evaluator()
-
-# # compute exact equity by enumerating all possible 5‑card boards
-# eq1, eq2, ties = evaluator.enumerate_equity([hand1], [hand2], board)
-# total = eq1 + eq2 + ties
-# print(f"Hand1 exact equity: {eq1/total:.2%}")
-
-
 # Use the same invalid card constant defined in OpenSpiel.
 kInvalidCard = -10000
 
@@ -27,7 +12,7 @@ def card_rank(card):
     return card // 2
 
 
-def h_perfect_info(state, agent):
+def h_perfect_info_leduc(state, agent):
     """
     A perfect info heuristic evaluation comparing the agent's score to the opponent's score.
 
@@ -58,7 +43,7 @@ def h_perfect_info(state, agent):
     return my_score - opp_score
 
 
-def h_imperfect_info(state, agent):
+def h_imperfect_info_leduc(state, agent):
     """
     Simple imperfect‑info: assume opp has any card in 0–5
     except your private and the public, uniform EV.

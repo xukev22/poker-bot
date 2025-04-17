@@ -50,6 +50,8 @@ print(len(state.legal_actions()))  # should be 52
 # https://github.com/crissilvaeng/acpc-server
 # https://github.com/google-deepmind/open_spiel/blob/master/open_spiel/canonical_game_strings.cc
 
+from utils import state_to_card_info, calc_hero_equity
+
 # should be true and 0-51 cards to deal
 print(state.is_chance_node())
 print(state.legal_actions())
@@ -57,6 +59,7 @@ print(state.legal_actions())
 # deal two 3s
 state.apply_action(6)
 state.apply_action(7)
+# state.apply_action(48)
 
 # still true and cards to deal
 print(state.is_chance_node())
@@ -110,9 +113,13 @@ import holdem_calc
 for pair in state.full_history():
     print(pair.player, pair.action)
 
+print(state_to_card_info(state))
+
 print(
     holdem_calc.calculate(
         ["As", "Ks", "Jd"], True, 1, None, ["8s", "7s", "Qc", "Th"], False
     )
 )
+
+print(calc_hero_equity(state))
 # print parallel_holdem_calc.calculate(None, True, 1, None, ["8s", "7s", "Ad", "Ac"], False)
