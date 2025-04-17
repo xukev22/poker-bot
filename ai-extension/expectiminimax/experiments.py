@@ -2,14 +2,21 @@ import pyspiel
 from expectiminimax.algorithms import get_best_action
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import os
 from collections import Counter
 
 
-def run_and_plot_leduc(depth, heuristic_fn, heuristic_name=None):
+def run_and_plot_leduc(
+    depth, heuristic_fn, heuristic_name=None, out_dir="../ai-extension/graphs"
+):
     """
     Runs expectiminimax best‐action search over all private‐card pairs
-    for player 0 at the given depth & heuristic, then plots the results.
+    for player 0 at the given depth & heuristic, then plots the results
+    *and saves the figure* to out_dir.
     """
+    # ensure output dir exists
+    os.makedirs(out_dir, exist_ok=True)
+
     game = pyspiel.load_game("leduc_poker")
     agent = 0
     act_count = len(game.new_initial_state().legal_actions())
@@ -66,6 +73,17 @@ def run_and_plot_leduc(depth, heuristic_fn, heuristic_name=None):
 
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
+
+    # build a filename
+    safe_name = title_h.replace(" ", "_")
+    fname = f"leduc_d{depth}_{safe_name}.png"
+    path = os.path.join(out_dir, fname)
+
+    # save to disk
+    plt.savefig(path, dpi=300)
+    print(f"Saved plot to {path}")
+
+    # optionally still show it
     plt.show()
 
 
