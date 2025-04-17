@@ -41,10 +41,6 @@ def h_perfect_info(state, agent):
         opp_score = opp_rank + opp_bonus
         print("perfect info")
     else:
-        # Fallback: assume average rank when opponent card is hidden
-        average_rank = sum([0, 1, 2]) // 3  # adjust based on deck composition
-        opp_score = average_rank
-        print("imperfect info")
-
+        raise ("We should know opponents card")
 
     return my_score - opp_score
