@@ -2,6 +2,7 @@ import pyspiel
 from expectiminimax.algorithms import get_best_action
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from collections import Counter
 
 
 def run_and_plot_leduc(depth, heuristic_fn, heuristic_name=None):
@@ -66,3 +67,35 @@ def run_and_plot_leduc(depth, heuristic_fn, heuristic_name=None):
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+
+def run_limit(start_state, depth, heuristic_fn, heuristic_name, k_samples, trials):
+    """
+    Run expectiminimax multiple times on fresh clones of start_state,
+    average the heuristic scores (to smooth out sampling noise),
+    and report the most common action seen.
+    """
+    scores = []
+    actions = []
+    for t in range(trials):
+        state = start_state.clone()
+        agent = 0  # can parameterize if we like
+        score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples)
+        scores.append(score)
+        actions.append(action)
+
+    avg_score = sum(scores) / trials
+    action_counts = Counter(actions)
+    most_common_action, freq = action_counts.most_common(1)[0]
+    # (for sanity we also fetch its string)
+    action_str = start_state.action_to_string(agent, most_common_action)
+
+    print(f"[{heuristic_name}] depth={depth}  k={k_samples}  trials={trials}")
+    print(f"    scores: {['{:.3f}'.format(s) for s in scores]}")
+    print(f"    avg   : {avg_score:.3f}")
+    print(
+        f"    best–action (mode {freq}/{trials}): "
+        f"{most_common_action} ({action_str})\n"
+    )
+
+    return avg_score, most_common_action
