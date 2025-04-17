@@ -1,4 +1,7 @@
-def expectiminimax(state, depth, agent, heursitic_fn):
+import random
+
+
+def expectiminimax(state, depth, agent, heursitic_fn, k_samples):
     """
     Recursive expectiminimax search for two-player zero-sum games.
 
@@ -16,11 +19,19 @@ def expectiminimax(state, depth, agent, heursitic_fn):
 
     # Chance node
     if state.is_chance_node():
+        outcomes = state.chance_outcomes()  # list of (action, prob)
+        # if fewer than k, just use them all
+        sampled = random.sample(outcomes, min(k_samples, len(outcomes)))
+        total_p = sum(p for _, p in sampled)
         value = 0.0
-        for action, prob in state.chance_outcomes():
+
+        for action, p in sampled:
             next_state = state.clone()
             next_state.apply_action(action)
-            value += prob * expectiminimax(next_state, depth, agent, heursitic_fn)
+            # re‑normalize: p / total_p
+            value += (p / total_p) * expectiminimax(
+                next_state, depth, agent, heursitic_fn, k_samples
+            )
         return value
 
     # Decision node
@@ -30,7 +41,7 @@ def expectiminimax(state, depth, agent, heursitic_fn):
         for action in state.legal_actions():
             nxt = state.clone()
             nxt.apply_action(action)
-            val = expectiminimax(nxt, depth - 1, agent, heursitic_fn)
+            val = expectiminimax(nxt, depth - 1, agent, heursitic_fn, k_samples)
             best = max(best, val)
         return best
     else:
@@ -38,12 +49,12 @@ def expectiminimax(state, depth, agent, heursitic_fn):
         for action in state.legal_actions():
             nxt = state.clone()
             nxt.apply_action(action)
-            val = expectiminimax(nxt, depth - 1, agent, heursitic_fn)
+            val = expectiminimax(nxt, depth - 1, agent, heursitic_fn, k_samples)
             worst = min(worst, val)
         return worst
 
 
-def get_best_action(state, depth, agent, heursitic_fn):
+def get_best_action(state, depth, agent, heursitic_fn, k_samples=10):
     """
     Returns the (value, action) pair with highest expectiminimax score
     for `agent` given `state` and search `depth`.
@@ -55,7 +66,7 @@ def get_best_action(state, depth, agent, heursitic_fn):
         # print("checking another action")
         nxt = state.clone()
         nxt.apply_action(action)
-        val = expectiminimax(nxt, depth - 1, agent, heursitic_fn)
+        val = expectiminimax(nxt, depth - 1, agent, heursitic_fn, k_samples)
         if val > best_value:
             best_value, best_action = val, action
     return best_value, best_action

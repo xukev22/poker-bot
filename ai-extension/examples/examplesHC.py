@@ -56,6 +56,8 @@ from utils import state_to_card_info, calc_hero_equity
 print(state.is_chance_node())
 print(state.legal_actions())
 
+print(state.chance_outcomes())
+
 # deal two 3s
 state.apply_action(6)
 state.apply_action(7)

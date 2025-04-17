@@ -31,7 +31,7 @@ depth = 3
 agent = 0
 heuristic_fn = h_perfect_info_limit
 
-score, action = get_best_action(state, depth, agent, heuristic_fn)
+score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples=10)
 action_str = state.action_to_string(agent, action)
 
 print(f"score: {score}, best action: {action} aka {action_str}")
