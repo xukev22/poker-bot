@@ -14,7 +14,7 @@ def card_rank(card):
     return card // 2
 
 
-def heuristic_evaluation_relative(state, agent):
+def h_perfect_info(state, agent):
     """
     A relative heuristic evaluation comparing the agent's score to the opponent's score.
 
