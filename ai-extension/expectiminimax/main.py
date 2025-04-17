@@ -4,7 +4,7 @@ from expectiminimax.heuristics import (
     h_perfect_info_weighted_total_limit,
 )
 import pyspiel
-from expectiminimax.experiments import run_limit
+from expectiminimax.experiments import run_and_plot_limit
 
 game = pyspiel.load_game(
     "universal_poker("
@@ -24,7 +24,7 @@ for a in (13, 14):
 
 depth = 4
 k_samples = 5
-trials = 3
+trials = 5
 
 # now loop over your heuristics
 for fn, name in [
@@ -32,4 +32,4 @@ for fn, name in [
     (h_perfect_info_weighted_total_limit, "total‑weighted"),
     (h_perfect_info_limit, "plain‑equity"),
 ]:
-    run_limit(base_state, depth, fn, name, k_samples, trials=3)
+    run_and_plot_limit(base_state, depth, fn, name, k_samples, trials)

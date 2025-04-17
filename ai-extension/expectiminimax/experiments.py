@@ -87,33 +87,73 @@ def run_and_plot_leduc(
     plt.show()
 
 
-def run_limit(start_state, depth, heuristic_fn, heuristic_name, k_samples, trials):
+import os
+import matplotlib.pyplot as plt
+from collections import Counter
+
+
+def run_and_plot_limit(
+    start_state,
+    depth,
+    heuristic_fn,
+    heuristic_name,
+    k_samples,
+    trials,
+    out_dir="../ai-extension/graphs",
+):
     """
     Run expectiminimax multiple times on fresh clones of start_state,
     average the heuristic scores (to smooth out sampling noise),
-    and report the most common action seen.
+    and report the most common action seen—but also
+    save two plots: a histogram of scores and a bar chart of action counts.
     """
+    os.makedirs(out_dir, exist_ok=True)
+
     scores = []
     actions = []
+    agent = 0
+
     for t in range(trials):
         state = start_state.clone()
-        agent = 0  # can parameterize if we like
         score, action = get_best_action(state, depth, agent, heuristic_fn, k_samples)
         scores.append(score)
         actions.append(action)
 
     avg_score = sum(scores) / trials
     action_counts = Counter(actions)
-    most_common_action, freq = action_counts.most_common(1)[0]
-    # (for sanity we also fetch its string)
-    action_str = start_state.action_to_string(agent, most_common_action)
+    most_action, freq = action_counts.most_common(1)[0]
+    most_str = start_state.action_to_string(agent, most_action)
 
-    print(f"[{heuristic_name}] depth={depth}  k={k_samples}  trials={trials}")
-    print(f"    scores: {['{:.3f}'.format(s) for s in scores]}")
-    print(f"    avg   : {avg_score:.3f}")
-    print(
-        f"    best–action (mode {freq}/{trials}): "
-        f"{most_common_action} ({action_str})\n"
+    # build filename base
+    safe_h = heuristic_name.replace(" ", "_")
+    base = f"limit_d{depth}_k{k_samples}_t{trials}_{safe_h}"
+    png_path = os.path.join(out_dir, base + ".png")
+
+    # make figure with 2 subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+
+    # 1) Histogram of scores
+    ax1.hist(scores, bins="auto", edgecolor="black")
+    ax1.set_title("Score Distribution")
+    ax1.set_xlabel("Score")
+    ax1.set_ylabel("Frequency")
+
+    # 2) Bar chart of action frequencies
+    labels = [start_state.action_to_string(agent, a) for a in action_counts.keys()]
+    counts = list(action_counts.values())
+    ax2.bar(labels, counts, edgecolor="black")
+    ax2.set_title("Action Counts")
+    ax2.set_ylabel("Trials")
+
+    fig.suptitle(
+        f"{heuristic_name} | depth={depth}, k={k_samples}, trials={trials}\n"
+        f"avg_score={avg_score:.3f}, mode={most_str} ({freq}/{trials})"
     )
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
-    return avg_score, most_common_action
+    # Save and show
+    plt.savefig(png_path, dpi=300)
+    print(f"→ Saved plots to {png_path}")
+    plt.show()
+
+    return avg_score, most_action
