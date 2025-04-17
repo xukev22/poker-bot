@@ -91,6 +91,9 @@ print(state)
 print(state.is_chance_node())
 print(state.legal_actions())
 
+print("hiya", calc_hero_equity(state, 0))
+
+
 # deal 4c,3c,2c
 print(state.apply_action(0))
 print(state.apply_action(4))
@@ -121,5 +124,5 @@ print(
     )
 )
 
-print(calc_hero_equity(state))
+print(calc_hero_equity(state, 1))
 # print parallel_holdem_calc.calculate(None, True, 1, None, ["8s", "7s", "Ad", "Ac"], False)

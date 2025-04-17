@@ -1,3 +1,5 @@
+from utils import calc_hero_equity
+
 # Use the same invalid card constant defined in OpenSpiel.
 kInvalidCard = -10000
 
@@ -72,3 +74,11 @@ def h_imperfect_info_leduc(state, agent):
 
     # 5) return expected difference
     return my_score - E_opp
+
+
+def h_perfect_info_limit(state, agent):
+    # outputs [tie equity?, hero equity, villain equity]
+    # given the known board and hole cards
+    # print(calc_hero_equity(state, agent))
+    tie, this_agent, opp_agent = calc_hero_equity(state, agent)
+    return tie + this_agent

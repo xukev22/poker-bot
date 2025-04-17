@@ -20,7 +20,7 @@ def expectiminimax(state, depth, agent, heursitic_fn):
         for action, prob in state.chance_outcomes():
             next_state = state.clone()
             next_state.apply_action(action)
-            value += prob * expectiminimax(next_state, depth - 1, agent, heursitic_fn)
+            value += prob * expectiminimax(next_state, depth, agent, heursitic_fn)
         return value
 
     # Decision node
@@ -52,6 +52,7 @@ def get_best_action(state, depth, agent, heursitic_fn):
     best_action = None
 
     for action in state.legal_actions():
+        # print("checking another action")
         nxt = state.clone()
         nxt.apply_action(action)
         val = expectiminimax(nxt, depth - 1, agent, heursitic_fn)

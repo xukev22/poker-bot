@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
 
-def run_and_plot(depth, heuristic_fn, heuristic_name=None):
+def run_and_plot_leduc(depth, heuristic_fn, heuristic_name=None):
     """
     Runs expectiminimax best‐action search over all private‐card pairs
     for player 0 at the given depth & heuristic, then plots the results.
