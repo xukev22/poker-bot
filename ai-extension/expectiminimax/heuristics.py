@@ -135,7 +135,6 @@ def h_perfect_info_weighted_ctrb_limit(state, agent):
 
 
 def h_imperfect_info_weighted_ctrb_limit(state, agent):
-    print("called")
     # equity (ignore ties here if you like)
     this_eq = simple_strength_heuristic(state, agent)
     # pot so far
