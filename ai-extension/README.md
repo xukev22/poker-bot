@@ -27,7 +27,7 @@ fourth issue: had to make a lot of changes
 
 then:
 -> exploring specific states (interesting findings/decisions)
--> playing around w/ heuristics (chip stacks, etc.)
+-> playing around w/ heuristics (chip stacks, etc.) -> better results w/ pot size
 -> normalize equities w/ sigmoid or something
 
 next steps issue: does not capture reality of poker (imperfect info, variance)
