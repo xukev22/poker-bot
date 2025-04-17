@@ -15,7 +15,20 @@ solution:
 -> played around w/ heuristics
 -> played around w/ depth
 -> played around w/ starting hands
--> exploring specific states (interesting findings/decisions)
--> extending to bigger variants of game (limit holdem)
 
-third issue: does not capture reality of poker (imperfect info, variance)
+third issue: leduc is too simple
+
+solution:
+-> expanded to a variant of limit holdem
+
+fourth issue: had to make a lot of changes
+-> could not get termination (k_samples 50 vs. 5 insane reduction)
+-> needed a new heuristic (new poker library used)
+
+then:
+-> exploring specific states (interesting findings/decisions)
+-> playing around w/ heuristics (chip stacks, etc.)
+-> normalize equities w/ sigmoid or something
+
+next steps issue: does not capture reality of poker (imperfect info, variance)
+planned solutions -> CFR

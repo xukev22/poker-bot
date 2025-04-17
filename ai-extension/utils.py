@@ -28,6 +28,17 @@ def state_to_card_info(state):
     return hero, villain, board
 
 
+def state_to_pot_size(state):
+    """
+    Given a pyspiel universal_poker State, return the total pot size
+    (i.e. the sum of all players' contributions so far).
+    """
+    # Get the raw ACPC state
+    acpc = state.acpc_state().raw_state()
+    # acpc.spent is a C‐array of per‐player contributions
+    return int(sum(acpc.spent))
+
+
 # 0 assumed to be hero, aka first two hole cards
 def calc_hero_equity(state, agent):
     hero, villain, board = state_to_card_info(state)

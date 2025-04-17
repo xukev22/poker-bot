@@ -80,5 +80,31 @@ def h_perfect_info_limit(state, agent):
     # outputs [tie equity?, hero equity, villain equity]
     # given the known board and hole cards
     # print(calc_hero_equity(state, agent))
-    tie, this_agent, opp_agent = calc_hero_equity(state, agent)
+    tie, this_agent, _ = calc_hero_equity(state, agent)
     return tie + this_agent
+
+
+def h_perfect_info_weighted_total_limit(state, agent):
+    # compute old “perfect‐info” number
+    tie, this_eq, _ = calc_hero_equity(state, agent)
+
+    # grab the per‐player contributions
+    acpc = state.acpc_state()
+    pot = sum(acpc.spent)  # total pot so far
+
+    # Option A: just scale equity by pot size
+    return (tie + this_eq) * pot
+
+
+def h_perfect_info_weighted_ctrb_limit(state, agent):
+    # compute old “perfect‐info” number
+    _, this_eq, _ = calc_hero_equity(state, agent)
+
+    # grab the per‐player contributions
+    acpc = state.acpc_state()
+    pot = sum(acpc.spent)  # total pot so far
+    contrib = acpc.spent[agent]  # how much *you* have put in so far
+
+    # Option B: convert to an *expected net* in chips:
+    #    EV = equity * pot − what you’ve already invested
+    return this_eq * pot - contrib

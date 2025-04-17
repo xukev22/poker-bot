@@ -11,7 +11,7 @@ def expectiminimax(state, depth, agent, heursitic_fn, k_samples):
 
     Returns the expectiminimax value for `agent` at `state`.
     """
-    print(depth)
+    # print(depth)
     # Terminal or cutoff
     if state.is_terminal() or depth == 0:
         if state.is_terminal():

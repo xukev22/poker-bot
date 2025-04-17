@@ -19,9 +19,9 @@ game = pyspiel.load_game(
 )
 state = game.new_initial_state()
 
-# deal two 3s
-state.apply_action(6)
-state.apply_action(7)
+# deal two As
+state.apply_action(48)
+state.apply_action(49)
 
 # deal two 5s to other player
 state.apply_action(13)
