@@ -28,19 +28,89 @@ def state_to_card_info(state):
     return hero, villain, board
 
 
-def state_to_pot_size(state):
-    """
-    Given a pyspiel universal_poker State, return the total pot size
-    (i.e. the sum of all players' contributions so far).
-    """
-    # Get the raw ACPC state
-    acpc = state.acpc_state().raw_state()
-    # acpc.spent is a C‐array of per‐player contributions
-    return int(sum(acpc.spent))
-
-
 # 0 assumed to be hero, aka first two hole cards
 def calc_hero_equity(state, agent):
     hero, villain, board = state_to_card_info(state)
     hole_cards = [*hero, *villain] if agent == 0 else [*villain, *hero]
     return holdem_calc.calculate(board, True, 1, None, hole_cards, False)
+
+
+from collections import Counter
+
+_rank_map = {
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "T": 10,
+    "J": 11,
+    "Q": 12,
+    "K": 13,
+    "A": 14,
+}
+
+
+def _card_rank(card):
+    return _rank_map[card[0]]
+
+
+def _card_suit(card):
+    return card[1]
+
+
+def simple_strength_heuristic(state, agent):
+    """
+    A very cheap [0..1] estimate of how good our hand is,
+    *without* ever iterating over villain hole cards.
+
+    Features:
+      - Pair / trips with the board
+      - Flush‐draw potential
+      - Straight‐draw potential
+      - High‐card strength
+    """
+    hero, _, board = state_to_card_info(state)
+    hero_cards = hero if agent == 0 else state_to_card_info(state)[1]
+    cards = hero_cards + board
+
+    # count ranks & suits
+    ranks = [_card_rank(c) for c in cards]
+    suits = [_card_suit(c) for c in cards]
+    rc = Counter(ranks)
+    sc = Counter(suits)
+
+    score = 0.0
+
+    # 1) Pair/trips bonus
+    for r in (_card_rank(c) for c in hero_cards):
+        if rc[r] >= 2:  # we’ve paired the board
+            score += 0.25 * (rc[r] - 1)
+
+    # 2) Flush‐draw bonus (need 4 cards of same suit total)
+    for s in set(_card_suit(c) for c in hero_cards):
+        if sc[s] >= 4:
+            score += 0.2
+
+    # 3) Straight‐draw bonus: look for any run of 4 distinct ranks
+    uniq = sorted(set(ranks))
+    max_run = 1
+    cur = 1
+    for i in range(1, len(uniq)):
+        if uniq[i] == uniq[i - 1] + 1:
+            cur += 1
+            max_run = max(max_run, cur)
+        else:
+            cur = 1
+    if max_run >= 4:
+        score += 0.2
+
+    # 4) High‐card kicker: highest hole‐card rank scaled into [0..0.3]
+    hv = max(_card_rank(c) for c in hero_cards)
+    score += 0.3 * ((hv - 2) / (14 - 2))
+
+    # clamp to [0,1]
+    return min(score, 1.0)

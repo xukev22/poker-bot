@@ -2,6 +2,7 @@ from expectiminimax.heuristics import (
     h_perfect_info_limit,
     h_perfect_info_weighted_ctrb_limit,
     h_perfect_info_weighted_total_limit,
+    h_imperfect_info_weighted_ctrb_limit,
 )
 import pyspiel
 from expectiminimax.experiments import run_and_plot_limit
@@ -24,10 +25,11 @@ for a in (13, 14):
 
 depth = 4
 k_samples = 5
-trials = 5
+trials = 3
 
 # now loop over your heuristics
 for fn, name in [
+    (h_imperfect_info_weighted_ctrb_limit, "imperf"),
     (h_perfect_info_weighted_ctrb_limit, "ctrb‑weighted"),
     (h_perfect_info_weighted_total_limit, "total‑weighted"),
     (h_perfect_info_limit, "plain‑equity"),

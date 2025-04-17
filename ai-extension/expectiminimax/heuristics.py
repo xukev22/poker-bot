@@ -1,4 +1,4 @@
-from utils import calc_hero_equity
+from utils import calc_hero_equity, simple_strength_heuristic
 
 # Use the same invalid card constant defined in OpenSpiel.
 kInvalidCard = -10000
@@ -126,6 +126,18 @@ def h_perfect_info_weighted_total_limit(state, agent):
 def h_perfect_info_weighted_ctrb_limit(state, agent):
     # equity (ignore ties here if you like)
     _, this_eq, _ = calc_hero_equity(state, agent)
+    # pot so far
+    pot = state_pot_size(state, agent)
+    # what *you* have already invested
+    contrib = state_contrib(state, agent)
+    # expected net‐EV = equity * pot − your sunk chips
+    return this_eq * pot - contrib
+
+
+def h_imperfect_info_weighted_ctrb_limit(state, agent):
+    print("called")
+    # equity (ignore ties here if you like)
+    this_eq = simple_strength_heuristic(state, agent)
     # pot so far
     pot = state_pot_size(state, agent)
     # what *you* have already invested
