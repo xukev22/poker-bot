@@ -3,7 +3,6 @@ from expectiminimax.heuristics import (
     h_perfect_info_weighted_ctrb_limit,
     h_perfect_info_weighted_total_limit,
 )
-from expectiminimax.algorithms import get_best_action
 import pyspiel
 from expectiminimax.experiments import run_limit
 
@@ -34,52 +33,3 @@ for fn, name in [
     (h_perfect_info_limit, "plain‑equity"),
 ]:
     run_limit(base_state, depth, fn, name, k_samples, trials=3)
-
-# game = pyspiel.load_game(
-#     "universal_poker("
-#     "betting=limit,numPlayers=2,numRounds=4,"
-#     "blind=1 2,raiseSize=2 4 8 16,"
-#     "maxRaises=3 3 3,"
-#     "numSuits=4,numRanks=13,"
-#     "numHoleCards=2,numBoardCards=0 3 1 1)"
-# )
-# state = game.new_initial_state()
-
-# # deal two As
-# state.apply_action(48)
-# state.apply_action(49)
-
-# # deal two 5s to other player
-# state.apply_action(13)
-# state.apply_action(14)
-
-# depth = 4
-# agent = 0
-# k_samples = 5
-# heuristic_fn1 = h_perfect_info_weighted_ctrb_limit
-# heuristic_fn2 = h_perfect_info_weighted_total_limit
-# heuristic_fn3 = h_perfect_info_limit
-
-# score, action = get_best_action(state, depth, agent, heuristic_fn1, k_samples)
-# action_str = state.action_to_string(agent, action)
-
-# print(state)
-# print(
-#     f"two As vs two 5s. depth: {depth} heuristic: {heuristic_fn1} k_samples: {5} \n score: {score}, best action: {action} aka {action_str}"
-# )
-
-# score, action = get_best_action(state, depth, agent, heuristic_fn2, k_samples)
-# action_str = state.action_to_string(agent, action)
-
-# print(state)
-# print(
-#     f"two As vs two 5s. depth: {depth} heuristic: {heuristic_fn2} k_samples: {5} \n score: {score}, best action: {action} aka {action_str}"
-# )
-
-# score, action = get_best_action(state, depth, agent, heuristic_fn3, k_samples)
-# action_str = state.action_to_string(agent, action)
-
-# print(state)
-# print(
-#     f"two As vs two 5s. depth: {depth} heuristic: {heuristic_fn3} k_samples: {5} \n score: {score}, best action: {action} aka {action_str}"
-# )

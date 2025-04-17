@@ -115,20 +115,20 @@ def state_contrib(state, agent):
 
 
 def h_perfect_info_weighted_total_limit(state, agent):
-    # 1) equity part
+    # equity part
     tie, this_eq, _ = calc_hero_equity(state, agent)
-    # 2) pot so far
+    # pot so far
     pot = state_pot_size(state, agent)
     # scale equity by pot
     return (tie + this_eq) * pot
 
 
 def h_perfect_info_weighted_ctrb_limit(state, agent):
-    # 1) equity (ignore ties here if you like)
+    # equity (ignore ties here if you like)
     _, this_eq, _ = calc_hero_equity(state, agent)
-    # 2) pot so far
+    # pot so far
     pot = state_pot_size(state, agent)
-    # 3) what *you* have already invested
+    # what *you* have already invested
     contrib = state_contrib(state, agent)
     # expected net‐EV = equity * pot − your sunk chips
     return this_eq * pot - contrib

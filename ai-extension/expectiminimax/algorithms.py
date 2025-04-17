@@ -11,7 +11,6 @@ def expectiminimax(state, depth, agent, heursitic_fn, k_samples):
 
     Returns the expectiminimax value for `agent` at `state`.
     """
-    # print(depth)
     # Terminal or cutoff
     if state.is_terminal() or depth == 0:
         if state.is_terminal():
@@ -64,7 +63,6 @@ def get_best_action(state, depth, agent, heursitic_fn, k_samples=10):
     best_action = None
 
     for action in state.legal_actions():
-        # print("checking another action")
         nxt = state.clone()
         nxt.apply_action(action)
         val = expectiminimax(nxt, depth - 1, agent, heursitic_fn, k_samples)

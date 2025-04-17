@@ -1,3 +1,6 @@
+import holdem_calc
+
+
 ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
 suits = ["c", "d", "h", "s"]
 mapping = {i: f"{ranks[i//4]}{suits[i%4]}" for i in range(52)}
@@ -11,9 +14,6 @@ mapping = {i: f"{ranks[i//4]}{suits[i%4]}" for i in range(52)}
 # mapping[32] == 'Tc'
 # mapping[44] == 'Kc'
 # mapping[48] == 'Ac'
-
-
-import holdem_calc
 
 
 def state_to_card_info(state):
