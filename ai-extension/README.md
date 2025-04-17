@@ -15,6 +15,7 @@ solution:
 -> played around w/ heuristics
 -> played around w/ depth
 -> played around w/ starting hands
--> played around w/ starting positions
+-> exploring specific states (interesting findings/decisions)
+-> extending to bigger variants of game (limit holdem)
 
 third issue: does not capture reality of poker (imperfect info, variance)

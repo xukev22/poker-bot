@@ -1,4 +1,17 @@
-import pyspiel
+# from pokerstove import Range, Evaluator
+
+# # define two specific hands (single‐hand ranges)
+# hand1 = Range("AsKd")  # Ace♠ King♦
+# hand2 = Range("QcJs")  # Queen♣ Jack♠
+
+# board = []  # e.g. preflop
+# evaluator = Evaluator()
+
+# # compute exact equity by enumerating all possible 5‑card boards
+# eq1, eq2, ties = evaluator.enumerate_equity([hand1], [hand2], board)
+# total = eq1 + eq2 + ties
+# print(f"Hand1 exact equity: {eq1/total:.2%}")
+
 
 # Use the same invalid card constant defined in OpenSpiel.
 kInvalidCard = -10000
