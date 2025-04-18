@@ -29,7 +29,7 @@ main.py is our entry point, where everything ties together. We explore all sorts
 3. model chaining
 
 - Combinations of agents playing each other
-- Combinations of state we care about
+- Combinations of state we care about (did not do but considered)
 - gamma
 
 note: replay buffer? 
