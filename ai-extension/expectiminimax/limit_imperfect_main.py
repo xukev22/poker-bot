@@ -25,5 +25,12 @@ k_samples = 5
 trials = 5
 
 run_and_plot_limit(
-    base_state, depth, h_imperfect_info_weighted_ctrb_limit, "imperf", k_samples, trials
+    base_state,
+    depth,
+    h_imperfect_info_weighted_ctrb_limit,
+    "imperf",
+    k_samples,
+    trials,
+    "../ai-extension/graphs",
+    "AA vs 55",
 )

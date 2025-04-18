@@ -16,11 +16,11 @@ game = pyspiel.load_game(
     "numHoleCards=2,numBoardCards=0 3 1 1)"
 )
 base_state = game.new_initial_state()
-# deal two As to hero
-for a in (48, 49):
+# deal AKs (clubs) to hero
+for a in (48, 44):
     base_state.apply_action(a)
-# deal two 5s to villain
-for a in (13, 14):
+# deal two Qs (no club) to villain
+for a in (41, 42):
     base_state.apply_action(a)
 
 depth = 4
@@ -29,9 +29,9 @@ trials = 20
 
 # now loop over heuristics
 for fn, name in [
-    # (h_imperfect_info_weighted_ctrb_limit, "imperf"),
-    # (h_perfect_info_weighted_ctrb_limit, "ctrb‑weighted"),
-    # (h_perfect_info_weighted_total_limit, "total‑weighted"),
+    (h_imperfect_info_weighted_ctrb_limit, "imperf"),
+    (h_perfect_info_weighted_ctrb_limit, "ctrb‑weighted"),
+    (h_perfect_info_weighted_total_limit, "total‑weighted"),
     (h_perfect_info_limit, "plain‑equity"),
 ]:
     run_and_plot_limit(
@@ -42,5 +42,5 @@ for fn, name in [
         k_samples,
         trials,
         "../ai-extension/graphs",
-        "AA vs 55",
+        "AKs vs QQ",
     )
