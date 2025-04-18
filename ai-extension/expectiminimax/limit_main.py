@@ -25,13 +25,22 @@ for a in (13, 14):
 
 depth = 4
 k_samples = 5
-trials = 3
+trials = 20
 
-# now loop over your heuristics
+# now loop over heuristics
 for fn, name in [
-    (h_imperfect_info_weighted_ctrb_limit, "imperf"),
-    (h_perfect_info_weighted_ctrb_limit, "ctrb‑weighted"),
-    (h_perfect_info_weighted_total_limit, "total‑weighted"),
+    # (h_imperfect_info_weighted_ctrb_limit, "imperf"),
+    # (h_perfect_info_weighted_ctrb_limit, "ctrb‑weighted"),
+    # (h_perfect_info_weighted_total_limit, "total‑weighted"),
     (h_perfect_info_limit, "plain‑equity"),
 ]:
-    run_and_plot_limit(base_state, depth, fn, name, k_samples, trials, "AA vs 55")
+    run_and_plot_limit(
+        base_state,
+        depth,
+        fn,
+        name,
+        k_samples,
+        trials,
+        "../ai-extension/graphs",
+        "AA vs 55",
+    )
