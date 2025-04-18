@@ -7,7 +7,10 @@ from collections import Counter
 
 
 def run_and_plot_leduc(
-    depth, heuristic_fn, heuristic_name=None, out_dir="../ai-extension/graphs"
+    depth,
+    heuristic_fn,
+    heuristic_name=None,
+    out_dir="../ai-extension/graphs",
 ):
     """
     Runs expectiminimax best‐action search over all private‐card pairs
@@ -100,6 +103,7 @@ def run_and_plot_limit(
     k_samples,
     trials,
     out_dir="../ai-extension/graphs",
+    hand_desc="not specified",
 ):
     """
     Run expectiminimax multiple times on fresh clones of start_state,
@@ -146,7 +150,7 @@ def run_and_plot_limit(
     ax2.set_ylabel("Trials")
 
     fig.suptitle(
-        f"{heuristic_name} | depth={depth}, k={k_samples}, trials={trials}\n"
+        f"{heuristic_name} | Hand description: {hand_desc} |depth={depth}, k={k_samples}, trials={trials}\n"
         f"avg_score={avg_score:.3f}, mode={most_str} ({freq}/{trials})"
     )
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])

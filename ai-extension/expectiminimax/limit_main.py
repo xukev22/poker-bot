@@ -34,4 +34,4 @@ for fn, name in [
     (h_perfect_info_weighted_total_limit, "total‑weighted"),
     (h_perfect_info_limit, "plain‑equity"),
 ]:
-    run_and_plot_limit(base_state, depth, fn, name, k_samples, trials)
+    run_and_plot_limit(base_state, depth, fn, name, k_samples, trials, "AA vs 55")
