@@ -2,7 +2,11 @@ import rlcard
 import torch
 import torch.nn.functional as F
 from torch.optim import Adam
-from PolicyNetwork import VPGPolicy
+from .PolicyNetwork import VPGPolicy
+from agents import PolicyAgent, RandomAgent
+from utils import process_limit_state_v1
+
+from experiments import evaluate_agents
 
 # 1) Enable single‑agent mode so step() returns (next_state, reward)
 env = rlcard.make("limit-holdem", config={"single_agent_mode": True})
@@ -14,7 +18,7 @@ n_actions = env.num_actions
 policy = VPGPolicy(input_dim, n_actions)
 optimizer = Adam(policy.parameters(), lr=0.001)
 gamma = 0.99
-num_episodes = 10000
+num_episodes = 1000
 
 for ep in range(num_episodes):
     state = env.reset()
@@ -57,5 +61,25 @@ for ep in range(num_episodes):
     policy_loss.backward()
     optimizer.step()
 
-    if (ep + 1) % 1000 == 0:
-        print(f"Episode {ep+1:5d}, avg return: {returns.mean().item():.3f}")
+    # if (ep + 1) % 1000 == 0:
+    #     print(f"Episode {ep+1:5d}, avg return: {returns.mean().item():.3f}")
+
+# 2) Re‑create the hold’em environment (multi‐agent mode)
+eval_env = rlcard.make("limit-holdem")  # default is multi‑agent
+
+# 3) Instantiate your trained policy and a random agent
+trained_agent = PolicyAgent(policy)  # your VPGPolicy, already trained
+random_agent = RandomAgent()
+
+# raw acts
+train, rand = evaluate_agents(
+    eval_env,
+    trained_agent,
+    random_agent,
+    10000,
+    False,
+    None,
+    use_raw=True,
+)
+
+print(train, rand)

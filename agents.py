@@ -3,6 +3,9 @@ from utils import process_leduc_state_v1
 from collections import defaultdict
 import pickle
 
+import torch
+import torch.nn.functional as F
+
 # pickle dont accept lambda
 
 
@@ -279,3 +282,28 @@ class EveryVisitMCAgent:
                 self.N[s][a] += 1
                 alpha = 1.0 / self.N[s][a]
                 self.Q[s][a] += alpha * (G - self.Q[s][a])
+
+
+# define a thin wrapper so RLCard knows how to call my net
+class PolicyAgent:
+    def __init__(self, policy_net, device="cpu"):
+        self.policy = policy_net.to(device)
+        self.device = device
+        self.policy.eval()
+
+    def step(self, state):
+        obs = torch.tensor(state["obs"], dtype=torch.float32, device=self.device)
+        logits = self.policy(obs)  # shape [n_actions]
+
+        # state["legal_actions"] is an OrderedDict → grab its keys
+        legal_ids = list(state["legal_actions"].keys())  # e.g. [0, 2, 5, 9]
+
+        # 1) extract only the legal logits
+        legal_logits = logits[legal_ids]  # now a small tensor of shape [len(legal_ids)]
+        # 2) softmax & sample (or argmax)
+        legal_probs = F.softmax(legal_logits, dim=-1)
+        idx_in_legal = torch.multinomial(legal_probs, 1).item()
+        return legal_ids[idx_in_legal]
+
+    def eval_step(self, state):
+        return self.step(state), {}
