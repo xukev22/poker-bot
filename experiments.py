@@ -2,6 +2,7 @@ import random
 
 from utils import process_leduc_state_v1
 import matplotlib.pyplot as plt
+from collections import Counter
 
 
 def play_episodes(
@@ -171,3 +172,82 @@ def human_play_bot(env, human_agent, bot_agent, human_first):
         # get final payoffs
         payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
         print(payoffs[human_pid])
+
+
+def evaluate_agents_with_action_counts(
+    env, agent0, agent1, num_episodes=1000, plot=False
+):
+    """
+    Plays `num_episodes` of agent0 vs. agent1, returning:
+      - avg_payoffs: tuple (avg_p0, avg_p1)
+      - action_counts: dict {
+            0: Counter({'call': x, 'raise': y, 'fold': z}),
+            1: Counter({...})
+        }
+    If plot=True, shows a line chart of cumulative action counts over episodes.
+    """
+
+    total_payoffs = [0.0, 0.0]
+    # per‑agent total counts
+    action_counts = {0: Counter(), 1: Counter()}
+    # for plotting: keep a running history of totals after each episode
+    history0 = []
+    history1 = []
+
+    for ep in range(1, num_episodes + 1):
+        env.reset()
+
+        # play one episode, counting actions as we go
+        while not env.is_over():
+            pid = env.get_player_id()
+            state = env.get_state(pid)
+            if pid == 0:
+                action = agent0.step(state)
+            else:
+                action = agent1.step(state)
+            # record the action
+            action_counts[pid][action] += 1
+            env.step(action, True)
+
+        payoffs = env.get_payoffs()
+        total_payoffs[0] += payoffs[0]
+        total_payoffs[1] += payoffs[1]
+
+        if plot:
+            # snapshot cumulative counts so far
+            history0.append(dict(action_counts[0]))
+            history1.append(dict(action_counts[1]))
+
+    avg_p0 = total_payoffs[0] / num_episodes
+    avg_p1 = total_payoffs[1] / num_episodes
+
+    if plot:
+        # build a DataFrame‐like structure for plotting
+        # for simplicity, assume both agents have same action set
+        actions = set(action_counts[0].keys()) | set(action_counts[1].keys())
+        plt.figure(figsize=(12, 5))
+
+        # Agent 0
+        plt.subplot(1, 2, 1)
+        for act in actions:
+            vals = [h.get(act, 0) for h in history0]
+            plt.plot(vals, label=act)
+        plt.title("Agent 0 cumulative action counts")
+        plt.xlabel("Episode")
+        plt.ylabel("Count")
+        plt.legend()
+
+        # Agent 1
+        plt.subplot(1, 2, 2)
+        for act in actions:
+            vals = [h.get(act, 0) for h in history1]
+            plt.plot(vals, label=act)
+        plt.title("Agent 1 cumulative action counts")
+        plt.xlabel("Episode")
+        plt.ylabel("Count")
+        plt.legend()
+
+        plt.tight_layout()
+        plt.show()
+
+    return (avg_p0, avg_p1), action_counts

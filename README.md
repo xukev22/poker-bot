@@ -24,3 +24,5 @@ Combinations of state we care about
 in eval we have predictable agent, may want to use greedy=False
 epsilon annealing
 model chaining
+
+1. first issue was understanding how RL card works
