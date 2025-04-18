@@ -1,6 +1,6 @@
 import rlcard
-from agents import EveryVisitMCAgent, RandomAgent, HumanAgent
-from experiments import play_episodes, human_play_bot, evaluate_agents
+from agents import EveryVisitMCAgent, RandomAgent
+from experiments import play_episodes, evaluate_agents
 from utils import process_leduc_state_v4
 
 NUM_EPISODES = 1000000

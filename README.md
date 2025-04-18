@@ -1,3 +1,5 @@
+YOU CAN IGNORE EVERYTHING IN AI-EXTENSION/...
+
 agents.py is for our agents which interact with the given RLCard envs
 
 utils.py is for any useful functions that did not belong in other files
@@ -32,7 +34,7 @@ main.py is our entry point, where everything ties together. We explore all sorts
 - Combinations of state we care about (did not do but considered)
 - gamma
 
-note: replay buffer? 
+note: replay buffer?
 note: here i realized a subtle thing, position is important
 
     Training agent_gen0_aggro_v4 vs. random agent
@@ -42,4 +44,20 @@ note: here i realized a subtle thing, position is important
     (switched) Eval payouts g0av4 vs random: 0.0486 -0.0486
     (switched) Eval payouts g0sv4 vs random 0.1294 -0.1294
 
+Training agent_gen1_aggro_v4 vs. agent_gen1_std_v4 agent
+Eval payouts g1av4 vs random: 0.95405 -0.95405
+Eval payouts g1sv4 vs random: 1.1292 -1.1292
+Saving gen 1 v4 agents
+Eval payouts g1av4 vs g1sv4: -0.6478 0.6478
 
+Eval payouts g2av4 vs random: 0.9761 -0.9761
+Eval payouts g2sv4 vs random: 1.1596 -1.1596
+Saving gen 2 v4 agents
+Eval payouts g2av4 vs g2sv4: -0.6285 0.6285
+
+note: training not improving, realized that replay buffer probably needed, also that we are just overfitting to whoever we play against
+
+4. extending to limit holdem (to look for improvements)
+
+
+5. vanilla policy gradient
