@@ -1,34 +1,13 @@
-first issue: RLcard does not extend well to search
--> hacky and had to mess w/ internal implementation details and still couldnt get it to work
+for CS4100, all code is in the ai-extension/ folder
+graphs are all figures in report + extra figures
 
-solution:
--> switched libraries to openspiel
--> different control mechanism allowed me to control chance nodes
+examples/_ is what I used for testing/code snippets
+expectiminimax/_ is where my core code is
 
-second issue: expectiminimax was returning very similar results:
+- algorithms.py: includes expectiminimax outline + best action helper
+- experiments.py: runs experiments w/ parameters on expectiminimax
+- heuristics.py: (s,a) -> value estimates
+- leduc_main.py: my main runner for leduc variant
+- limit_imperfect_main.py/limit_main.py: my main runners for limit variant
 
--> see first graph
--> only 0, -1, 1
--> only call was used
-
-solution:
--> played around w/ heuristics
--> played around w/ depth
--> played around w/ starting hands
-
-third issue: leduc is too simple
-
-solution:
--> expanded to a variant of limit holdem
-
-fourth issue: had to make a lot of changes
--> could not get termination (k_samples 50 vs. 5 insane reduction)
--> needed a new heuristic (new poker library used)
-
-then:
--> exploring specific states (interesting findings/decisions)
--> playing around w/ heuristics (chip stacks, etc.) -> better results w/ pot size
--> normalize equities w/ sigmoid or something
-
-next steps issue: does not capture reality of poker (imperfect info, variance)
-planned solutions -> CFR
+utils.py: helper funcs
