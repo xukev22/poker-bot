@@ -91,4 +91,4 @@ def process_leduc_state_v4(raw_imperfect_state, pid):
 
 
 # TODO
-# explore how cum reward agaisnt random agent changes over different time steps
+# explore how cum. reward agaisnt random agent changes over different time steps

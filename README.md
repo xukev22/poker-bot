@@ -9,11 +9,9 @@ main.py is our entry point, where everything ties together. We explore all sorts
 The obvious parameters: epsilon and gamma
 
 - epsilon:
-  I think lower epsilon makes agent
+  I think lower epsilon???
 - gamma:
   I think lower gamma incentivizes bluffing
-
-  epsilon annealing? maybe but prob doesnt matter, could play around w/ update freq more
 
 Num episodes and update_freq
 - could play a role but nothing noticable?
