@@ -59,5 +59,31 @@ note: training not improving, realized that replay buffer probably needed, also 
 
 4. extending to limit holdem (to look for improvements)
 
+note: poor initial results
+Training agent_ev4 vs. random agent
+0.20605 -0.20605
+
+Ways to shrink your pickle
+Simplify your state representation
+Switch back to process_leduc_state_v1 (hand, public_card, chip counts) or even v2. That slashes the number of distinct states by orders of magnitude.
+
+Prune low‑count entries before saving
+
+# e.g. drop any (s,a) seen fewer than 5 times
+for s in list(agent.N):
+    for a in list(agent.N[s]):
+        if agent.N[s][a] < 5:
+            del agent.Q[s][a]
+            del agent.N[s][a]
+    if not agent.N[s]:
+        del agent.N[s]
+        del agent.Q[s]
+That removes the tail of your “long‑tail” state‑action pairs.
+
+Customize what gets pickled
+Implement __getstate__/__setstate__ on your agent class to only serialize Q (or even a filtered version of it), skipping N or any other ephemeral data.
+
+Training agent_ev4 vs. random agent
+0.180815 -0.180815
 
 5. vanilla policy gradient

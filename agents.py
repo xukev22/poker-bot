@@ -5,6 +5,7 @@ import pickle
 
 # pickle dont accept lambda
 
+
 def default_float_dict():
     return defaultdict(float)
 
@@ -109,7 +110,11 @@ class FirstVisitMCAgent:
         """
         raw_obs_dict = state["raw_obs"]
         legal_acts = raw_obs_dict["legal_actions"]
-        cur_pid = raw_obs_dict["current_player"]
+        # add this for backwards compatibility w/ limit:
+
+        cur_pid = raw_obs_dict.get(
+            "current_player", env.get_perfect_information()["current_player"]
+        )
 
         # Epsilon-greedy exploration
         if (not greedy) and (random.random() < self.epsilon):
@@ -228,7 +233,8 @@ class EveryVisitMCAgent:
         """
         raw_obs = state["raw_obs"]
         legal_acts = raw_obs["legal_actions"]
-        cur_pid = raw_obs["current_player"]
+        # to allow for cur player not to be known, limit doesnt pass it in (tracked at env level instead of state, weird)
+        cur_pid = raw_obs.get("current_player", None)
 
         # Epsilon-greedy exploration
         if (not greedy) and (random.random() < self.epsilon):
