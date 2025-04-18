@@ -1,3 +1,9 @@
+## Quickstart
+
+`cd ai-extension`
+// in ai-extension folder run:
+`python -m expectiminimax.limit_main` or whatever main file you want to run 
+
 for CS4100, all code is in the ai-extension/ folder
 graphs are all figures in report + extra figures
 
