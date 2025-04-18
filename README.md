@@ -87,3 +87,9 @@ Training agent_ev4 vs. random agent
 0.180815 -0.180815
 
 5. vanilla policy gradient
+
+1000 vs 10000
+(base) kevinxu@KEVUHH-MacBook-Pro poker-bot % python -m vpg.main
+2.9014 -2.9014
+(base) kevinxu@KEVUHH-MacBook-Pro poker-bot % python -m vpg.main
+2.8689 -2.8689

@@ -113,11 +113,8 @@ class FirstVisitMCAgent:
         """
         raw_obs_dict = state["raw_obs"]
         legal_acts = raw_obs_dict["legal_actions"]
-        # add this for backwards compatibility w/ limit:
+        cur_pid = raw_obs_dict["current_player"]
 
-        cur_pid = raw_obs_dict.get(
-            "current_player", env.get_perfect_information()["current_player"]
-        )
 
         # Epsilon-greedy exploration
         if (not greedy) and (random.random() < self.epsilon):

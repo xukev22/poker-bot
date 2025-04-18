@@ -3,12 +3,12 @@ import torch
 import torch.nn.functional as F
 from torch.optim import Adam
 from .PolicyNetwork import VPGPolicy
-from agents import PolicyAgent, RandomAgent
-from utils import process_limit_state_v1
+from agents import PolicyAgent, RandomAgent, EveryVisitMCAgent
+from utils import process_limit_state_v2
 
 from experiments import evaluate_agents
 
-# 1) Enable single‑agent mode so step() returns (next_state, reward)
+# enable single‑agent mode so step() returns (next_state, reward)
 env = rlcard.make("limit-holdem", config={"single_agent_mode": True})
 state = env.reset()
 state = state[0]
@@ -18,7 +18,7 @@ n_actions = env.num_actions
 policy = VPGPolicy(input_dim, n_actions)
 optimizer = Adam(policy.parameters(), lr=0.001)
 gamma = 0.99
-num_episodes = 1000
+num_episodes = 10000
 
 for ep in range(num_episodes):
     state = env.reset()
@@ -26,12 +26,12 @@ for ep in range(num_episodes):
     log_probs = []
     rewards = []
 
-    # Roll out one episode
+    # roll out one episode
     while not env.is_over():
         obs = torch.tensor(state["obs"], dtype=torch.float32)
         logits = policy(obs)
 
-        # Mask illegal actions
+        # mask illegal actions
         legal_ids = list(state["legal_actions"].keys())
         mask = torch.full((n_actions,), float("-1e9"))
         mask[legal_ids] = 0
@@ -42,18 +42,18 @@ for ep in range(num_episodes):
         action = torch.multinomial(probs, 1).item()
         log_probs.append(torch.log(probs[action]))
 
-        # Now step gives (next_state, reward)
+        # now step gives (next_state, reward)
         state, reward = env.step(action)
         rewards.append(reward)
 
-    # Compute reward‑to‑go and do one REINFORCE update
+    # compute reward‑to‑go and do one REINFORCE update
     returns = []
     G = 0.0
     for r in reversed(rewards):
         G = r + gamma * G
         returns.insert(0, G)
     returns = torch.tensor(returns, dtype=torch.float32)
-    # Use ddof=0 so std of a single value (instant fold) is 0 (not nan)
+    # use ddof=0 so std of a single value (instant fold) is 0 (not nan)
     returns = (returns - returns.mean()) / (returns.std(unbiased=False) + 1e-8)
 
     policy_loss = torch.stack([-lp * G for lp, G in zip(log_probs, returns)]).sum()
@@ -64,11 +64,11 @@ for ep in range(num_episodes):
     # if (ep + 1) % 1000 == 0:
     #     print(f"Episode {ep+1:5d}, avg return: {returns.mean().item():.3f}")
 
-# 2) Re‑create the hold’em environment (multi‐agent mode)
+# re‑create the holdem environment, prob not needed just being safe (multi‐agent mode)
 eval_env = rlcard.make("limit-holdem")  # default is multi‑agent
 
-# 3) Instantiate your trained policy and a random agent
-trained_agent = PolicyAgent(policy)  # your VPGPolicy, already trained
+# instantiate trained policy and a random agent
+trained_agent = PolicyAgent(policy)  # VPGPolicy, already trained
 random_agent = RandomAgent()
 
 # raw acts
@@ -79,7 +79,30 @@ train, rand = evaluate_agents(
     10000,
     False,
     None,
-    use_raw=True,
 )
 
 print(train, rand)
+
+agent_gen0_aggro_v2l = EveryVisitMCAgent.load("agents/agent_gen0_aggro_v2l.pkl")
+agent_gen0_std_v2l = EveryVisitMCAgent.load("agents/agent_gen0_std_v2l.pkl")
+
+
+g0av2l, vpg = evaluate_agents(
+    env,
+    agent_gen0_aggro_v2l,
+    trained_agent,
+    100000,
+    False,
+    process_limit_state_v2,
+)
+print("Eval payouts g0av2l vs vpg:", g0av2l, vpg)
+
+vpg, g0sv2l = evaluate_agents(
+    env,
+    trained_agent,
+    agent_gen0_std_v2l,
+    100000,
+    False,
+    process_limit_state_v2,
+)
+print("Eval payouts vpg vs g0sv2l:", vpg, g0sv2l)

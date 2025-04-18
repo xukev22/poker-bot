@@ -5,3 +5,5 @@ __pycache__/
 /agents/agentR.pkl
 /agents/agentR1e6v2.pkl
 /agents/agentR1e7v2.pkl
+
+/agents/

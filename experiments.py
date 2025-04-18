@@ -13,7 +13,6 @@ def play_episodes(
     do_update=True,
     update_freq=1,
     state_transformer=process_leduc_state_v1,
-    use_raw=False,
 ):
     """
     Run 'num_episodes' episodes of the environment with agent0 (player 0) and agent1 (player 1).
@@ -71,10 +70,15 @@ def play_episodes(
             # step the env
             # print("in PLAY", use_raw)
             # print(action, pid)
-            if pid == 1:
+            # if pid == 1:
+            #     env.step(action, True)
+            # else:
+            #     env.step(action, not use_raw)
+            try:
                 env.step(action, True)
-            else:
-                env.step(action, not use_raw)
+            except Exception as e:
+                # Fallback to non‑raw action if the raw one fails
+                env.step(action, False)
 
         # get final payoffs
         payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]
@@ -115,7 +119,6 @@ def evaluate_agents(
     num_episodes=1000,
     plot=False,
     state_transformer=process_leduc_state_v1,
-    use_raw=False,
 ):
     """
     Plays `num_episodes` episodes of agent0 vs. agent1 and returns
@@ -127,7 +130,7 @@ def evaluate_agents(
     # print("eval called", use_raw)
     # Gather payoffs from each episode
     payoffs = play_episodes(
-        env, agent0, agent1, num_episodes, False, 1, state_transformer, use_raw
+        env, agent0, agent1, num_episodes, False, 1, state_transformer
     )
     # Separate payoffs for each agent
     p0_rewards = [p[0] for p in payoffs]

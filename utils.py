@@ -84,6 +84,7 @@ def process_leduc_state_v4(raw_imperfect_state, pid):
     """
     raw_obs = raw_imperfect_state["raw_obs"]
     hand = raw_obs["hand"]
+    print(raw_obs)
     public_card = raw_obs["public_card"]
     # make immutable
     action_record = tuple(raw_imperfect_state["action_record"])
