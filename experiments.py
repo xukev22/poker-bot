@@ -184,11 +184,15 @@ def human_play_bot(env, human_agent, bot_agent, human_first):
                 print("*" * 20)
                 print("you took action:", action)
             else:
-                action = bot_agent.step(state_for_pid, True)
+                action = bot_agent.step(state_for_pid)
                 print("bot took action:", action)
 
             # step the env
-            env.step(action, True)
+            try:
+                env.step(action, True)
+            except Exception as e:
+                # Fallback to non‑raw action if the raw one fails
+                env.step(action, False)
 
         # get final payoffs
         payoffs = env.get_payoffs()  # [payoff_p0, payoff_p1]

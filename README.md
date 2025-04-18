@@ -70,18 +70,19 @@ Switch back to process_leduc_state_v1 (hand, public_card, chip counts) or even v
 Prune low‑count entries before saving
 
 # e.g. drop any (s,a) seen fewer than 5 times
+
 for s in list(agent.N):
-    for a in list(agent.N[s]):
-        if agent.N[s][a] < 5:
-            del agent.Q[s][a]
-            del agent.N[s][a]
-    if not agent.N[s]:
-        del agent.N[s]
-        del agent.Q[s]
+for a in list(agent.N[s]):
+if agent.N[s][a] < 5:
+del agent.Q[s][a]
+del agent.N[s][a]
+if not agent.N[s]:
+del agent.N[s]
+del agent.Q[s]
 That removes the tail of your “long‑tail” state‑action pairs.
 
 Customize what gets pickled
-Implement __getstate__/__setstate__ on your agent class to only serialize Q (or even a filtered version of it), skipping N or any other ephemeral data.
+Implement **getstate**/**setstate** on your agent class to only serialize Q (or even a filtered version of it), skipping N or any other ephemeral data.
 
 Training agent_ev4 vs. random agent
 0.180815 -0.180815
@@ -93,3 +94,18 @@ Training agent_ev4 vs. random agent
 2.9014 -2.9014
 (base) kevinxu@KEVUHH-MacBook-Pro poker-bot % python -m vpg.main
 2.8689 -2.8689
+
+1000 w/100k eval
+python -m vpg.main
+2.87705 -2.87705
+Eval payouts g0av2l vs vpg: -4.90859 4.90859
+Eval payouts vpg vs g0sv2l: 3.533615 -3.533615
+(base) kevinxu@KEVUHH-MacBook-Pro poker-bot % git status
+
+10000 w/ 100k eval
+poker-bot % python -m vpg.main  
+2.8867 -2.8867
+Eval payouts g0av2l vs vpg: -4.910595 4.910595
+Eval payouts vpg vs g0sv2l: 3.55327 -3.55327
+
+except
