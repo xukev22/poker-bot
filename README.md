@@ -109,3 +109,10 @@ Eval payouts g0av2l vs vpg: -4.910595 4.910595
 Eval payouts vpg vs g0sv2l: 3.55327 -3.55327
 
 except
+
+(base) kevinxu@KEVUHH-MacBook-Pro poker-bot % python -m vpg.main
+2.8372 -2.8372
+Eval payouts g0av2l vs vpg: -4.89026 4.89026
+Eval payouts vpg vs g0sv2l: 3.57524 -3.57524
+Eval payouts g0av1l vs vpg: -4.96113 4.96113
+Eval payouts vpg vs g0sv1l: 3.57972 -3.57972

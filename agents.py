@@ -115,7 +115,6 @@ class FirstVisitMCAgent:
         legal_acts = raw_obs_dict["legal_actions"]
         cur_pid = raw_obs_dict["current_player"]
 
-
         # Epsilon-greedy exploration
         if (not greedy) and (random.random() < self.epsilon):
             # explore
@@ -292,12 +291,12 @@ class PolicyAgent:
         obs = torch.tensor(state["obs"], dtype=torch.float32, device=self.device)
         logits = self.policy(obs)  # shape [n_actions]
 
-        # state["legal_actions"] is an OrderedDict → grab its keys
+        # state["legal_actions"] is an OrderedDict -> grab its keys
         legal_ids = list(state["legal_actions"].keys())  # e.g. [0, 2, 5, 9]
 
-        # 1) extract only the legal logits
+        # extract only the legal logits
         legal_logits = logits[legal_ids]  # now a small tensor of shape [len(legal_ids)]
-        # 2) softmax & sample (or argmax)
+        # softmax & sample (argmax?)
         legal_probs = F.softmax(legal_logits, dim=-1)
         idx_in_legal = torch.multinomial(legal_probs, 1).item()
         return legal_ids[idx_in_legal]

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from .PolicyNetwork import VPGPolicy
 from agents import PolicyAgent, RandomAgent, EveryVisitMCAgent
-from utils import process_limit_state_v2
+from utils import process_limit_state_v2, process_limit_state_v1
 
 from experiments import evaluate_agents
 
@@ -106,3 +106,27 @@ vpg, g0sv2l = evaluate_agents(
     process_limit_state_v2,
 )
 print("Eval payouts vpg vs g0sv2l:", vpg, g0sv2l)
+
+
+agent_gen0_aggro_v1l = EveryVisitMCAgent.load("agents/gen0_v1l_aggro.pkl")
+agent_gen0_std_v1l = EveryVisitMCAgent.load("agents/gen0_v1l_std.pkl")
+
+g0av1l, vpg = evaluate_agents(
+    env,
+    agent_gen0_aggro_v1l,
+    trained_agent,
+    100000,
+    False,
+    process_limit_state_v1,
+)
+print("Eval payouts g0av1l vs vpg:", g0av1l, vpg)
+
+vpg, g0sv1l = evaluate_agents(
+    env,
+    trained_agent,
+    agent_gen0_std_v1l,
+    100000,
+    False,
+    process_limit_state_v1,
+)
+print("Eval payouts vpg vs g0sv1l:", vpg, g0sv1l)
